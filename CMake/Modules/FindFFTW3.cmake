@@ -23,4 +23,27 @@ else()
 endif()
 #message("found FFTW3 includes at ${FFTW3_INCLUDE_DIR}" )
 
-find_library(FFTW3_LIBRAR
+find_library(FFTW3_LIBRARY fftw3
+             HINTS ${FFTW3_ROOT}
+		/opt/local/
+		/usr/local/
+             PATH_SUFFIXES lib
+            )
+
+find_library(FFTW3_PARALLEL_LIB fftw3_omp 
+             HINTS ${FFTW3_ROOT}
+		/opt/local/
+		/usr/local/
+             PATH_SUFFIXES lib
+            )
+
+set(FFTW3_LIBRARIES ${FFTW3_LIBRARY} ${FFTW3_PARALLEL_LIB})
+set(FFTW3_INCLUDE_DIR ${FFTW3_INCLUDE_DIR} )
+
+include(FindPackageHandleStandardArgs)
+# handle the QUIETLY and REQUIRED arguments and set FFTW3_FOUND to TRUE
+# if all listed variables are TRUE
+find_package_handle_standard_args(fftw3  DEFAULT_MSG
+                                  FFTW3_LIBRARY FFTW3_PARALLEL_LIB FFTW3_INCLUDE_DIR)
+
+mark_as_advanced(FFTW3_INCLUDE_DIR FFTW3_LIBRARY FFTW_PARALLEL_LIB)
