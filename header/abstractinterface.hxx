@@ -133,3 +133,42 @@ public:
      * \param backgroundimage is another abstractinterface storing the background
      * image
      * \param level is the level of the image to show
+     */
+    virtual void show_contour_with_background_image
+    (abstractinterface& backgroundimage, double const& level = 0) {};
+
+    /*!
+     * \brief Member to get coordinates of a pixel after showing image.
+     *
+     * \param i is the pixel index of the first dimension coordinate
+     * \param j is the pixel index of the second dimension coordinate
+     * \param k is the pixel index of the third dimension coordinate
+     */
+    virtual void get_coordinates (uint& i, uint& j, uint& k) = 0;
+
+    /*!
+     * \brief Member to get coordinates of a pair of pixels after showing image.
+     *
+     * \param i1 is the first pixel index of the first dimension coordinate
+     * \param j1 is the first pixel index of the second dimension coordinate
+     * \param k1 is the first pixel index of the third dimension coordinate
+     * \param i2 is the second pixel index of the first dimension coordinate
+     * \param j2 is the second pixel index of the second dimension coordinate
+     * \param k2 is the second pixel index of the third dimension coordinate
+     */
+    virtual void get_coordinates (uint& i1, uint& j1, uint& k1,
+                                  uint& i2, uint& j2, uint& k2) = 0;
+
+    /*!
+     * \brief Member to write an image in a file.
+     *
+     * \param imagename contains the name of the file
+     *  \param extension contains the extension of the file including dot (e.g. ".mhd")
+     */
+    virtual void write (std::string const& imagename, std::string const& extension) const = 0;
+
+}; // end class abstractinterface
+
+}// end namespace im3d
+
+#endif // ABSTRACTINTERFACE_HXX_INCLUDED
