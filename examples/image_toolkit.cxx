@@ -397,3 +397,192 @@ int main (int argc, char** argv)
 
 
                 case 14:
+                {
+                    uint quantization;
+                    std::cout << "Choose parameter of Histogram Equalization:" << std::endl;
+                    std::cout << "quantization (suggested at least 256): ";
+                    cin >> quantization;
+
+                    myim.histogram_equalization (output_image, quantization);
+                }
+                break;
+
+
+
+                case 15:
+                {
+                    string getpot_file, logfile;
+                    bool onthego;
+                    int choice;
+                    segm::rsfe_splitbregman<MY_REAL> algo;
+
+                    std::cout << "Choose parameters of RSFE Split Bregman Segmentation Algorithm:";
+                    std::cout << std::endl;
+                    std::cout << "\tgetpot file (digit ! to use default): ";
+                    cin >> getpot_file;
+
+                    if (getpot_file != "!")
+                    {
+                        algo.set_getpotfile (getpot_file);
+                    }
+
+                    std::cout << "\tlogfilename (digit ! not to set a file): ";
+                    cin >> logfile;
+
+                    if (logfile != "!")
+                    {
+                        algo.set_logfilename (logfile);
+                    }
+
+                    std::cout << "\ton the go interactivity (0=false, 1=true): ";
+                    cin >> onthego;
+
+                    algo.set_onthego (onthego);
+
+                    std::cout << "\tset initial contour:" << std::endl;
+                    std::cout << "\t\t1) default" << std::endl;
+                    std::cout << "\t\t2) customized cube" << std::endl;
+                    std::cout << "\t\t3) from an image" << std::endl;
+
+                    cin >> choice;
+
+                    switch (choice)
+                    {
+                        case 1:
+                            algo.apply (myim);
+                            break;
+
+                        case 2:
+                            algo.initialize_contour_as_cube (myim);
+                            algo.apply (myim);
+                            break;
+
+                        case 3:
+                        {
+                            string init_file;
+
+                            std::cout << "Choose a file for the initialization (with path):\t";
+
+                            cin >> init_file;
+
+                            im3d::interface<MY_REAL> init_interface (init_file);
+                            im3d::image3d<MY_REAL> init_image;
+                            init_interface.convert2image3d (init_image);
+
+                            algo.apply (myim, init_image);
+                        }
+                        break;
+
+                        default:
+                            break;
+                    }
+
+                    output_image = algo.getoutput();
+                }
+                break;
+
+
+                case 16:
+                {
+                    im3d::image3d<MY_REAL> aux;
+
+                    string filename_binaryimage;
+
+                    std::cout << "file with binary image to subtract (with path): " ;
+                    std::cin >> filename_binaryimage;
+                    {
+                        im3d::interface<MY_REAL> reader (filename_binaryimage);
+                        // converting chosen image in an image3d
+                        reader.convert2image3d (aux);
+                    }
+                    MY_REAL min, max;
+                    min = myim.min();
+                    max = myim.max();
+                    output_image = myim;
+                    output_image.change_range_of_intensity (max - min);
+                    aux *= max - min;
+                    output_image -= aux;
+                    aux = output_image;
+                    aux.select_range_of_intensity (output_image, min, max);
+                }
+
+                break;
+
+
+                default:
+                    return 0;
+
+                    break;
+
+
+            }// end initial menu switch case
+
+
+            if (choice != 1)
+            {
+
+                // change range of intensity between 0 and max-min to facility visualization
+                // on a gray scale
+                // output_image.change_range_of_intensity(output_image.max()-output_image.min());
+
+                // create output_interface
+                im3d::interface<MY_REAL> output_interface (output_image);
+
+                std::cout << "Showing original image..." << std::endl;
+                myim_interface.show_image();
+
+                std::cout << "Showing output image..." << std::endl;
+                if ( output_image.getdimz() != 1 && (choice == 2 || choice == 12 || choice == 15) )
+                {
+                    output_interface.show_image_and_contour ( (output_image.max() - output_image.min() ) / 2);
+                }
+                else
+                {
+                    output_interface.show_image();
+                }
+
+                // allowing user to choose if he would like to save result of filtering or not
+                std::cout << "Do you want to save this filtered image? (y/n): ";
+                cin >> answer;
+
+                if (answer == 'y')
+                {
+                    string output_filename;
+                    std::cout << "Choose name of output file (full path): ";
+                    cin >> output_filename;
+
+                    if (output_image.getdimz() == 1)
+                    {
+                        std::cout << "Choose format (j=.jpg, m=.mhd): ";
+                        cin >> answer;
+                    }
+
+                    if (answer == 'j')
+                    {
+                        output_interface.write (output_filename, ".jpg");
+                    }
+                    else
+                    {
+                        output_interface.write (output_filename, ".mhd");
+                    }
+                }
+
+                // allowing user to choose if he would like to continue to modify output image
+                std::cout << "Do you want to continue to modify output image? (y/n): ";
+                cin >> answer;
+
+                if (answer == 'y')
+                {
+                    myim = output_image;
+                    myim_interface.convertfromimage3d (myim);
+                }
+
+            }
+
+        }//end while
+
+    }// end initial else
+
+
+    return 0;
+}
