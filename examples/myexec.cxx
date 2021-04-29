@@ -22,4 +22,20 @@ Read details of the license in the file license.txt provided with the library.
 #include "../header/convolution.hxx"
 
 
-#include 
+#include <string>
+
+
+
+using namespace std;
+using namespace im3d;
+
+typedef float MY_REAL;
+
+
+
+int main (int argc, char** argv)
+{
+    // write here your code exploiting the library
+
+    return 0;
+}
