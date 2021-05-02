@@ -40,4 +40,34 @@ struct BadFPOper : public std::exception
     virtual char const* what() const throw()
     {
         return "Error::Invalid FP Operation: Possibly 0/0 or sqrt of negative number. \
-Program is not stopping. Compile with the option -DFPE_ABORT to auto
+Program is not stopping. Compile with the option -DFPE_ABORT to automatically \
+abort program at Floating Point Operation Exceptions ";
+    }
+};
+
+struct BadDivision : public std::exception
+{
+    virtual char const* what() const throw()
+    {
+        return "Error::Division by Zero. Program is not stopping. Compile with the option \
+-DFPE_ABORT to automatically abort program at Floating Point Operation Exceptions";
+    }
+};
+
+
+void test_fpe_exception() throw (BadFPOper, BadDivision)
+{
+    int set_excepts = fetestexcept (FE_INVALID | FE_DIVBYZERO);
+    feclearexcept (FE_INVALID | FE_DIVBYZERO);
+    if (set_excepts & FE_INVALID)
+    {
+        throw BadFPOper();
+    }
+    if (set_excepts & FE_DIVBYZERO)
+    {
+        throw BadDivision();
+    }
+}
+
+#endif
+
