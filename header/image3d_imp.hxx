@@ -75,4 +75,51 @@ void im3d::image3d<T>::setdimy (uint const& y)
 {
     this->dimy = y;
     this->rawimage.resize (0);
-    this->rawimage.resize ( this->dimx * 
+    this->rawimage.resize ( this->dimx * this->dimy * this->dimz);
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::setdimz (uint const& z)
+{
+    this->dimz = z;
+    this->rawimage.resize (0);
+    this->rawimage.resize ( this->dimx * this->dimy * this->dimz);
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::setdim (uint const& x, uint const& y, uint const& z,
+                               T const& value)
+{
+    this->dimx = x;
+    this->dimy = y;
+    this->dimz = z;
+    this->rawimage.resize (0);
+    this->rawimage.resize ( this->dimx * this->dimy * this->dimz, value);
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::sethx (double const& hx)
+{
+    this->hx = hx;
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::sethy (double const& hy)
+{
+    this->hy = hy;
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::sethz (double const& hz)
+{
+    this->h
