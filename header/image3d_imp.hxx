@@ -42,4 +42,37 @@ im3d::image3d<T>::image3d (uint const& x, uint const& y, uint const& z,
 
 
 template <typename T>
-im3d::image
+im3d::image3d<T>::image3d (image3d const& tocopy)
+{
+    this->setdim (tocopy.getdimx(), tocopy.getdimy(), tocopy.getdimz() );
+    this->seth (tocopy.gethx(), tocopy.gethy(), tocopy.gethz() );
+
+    #pragma omp parallel for
+    for (uint i = 0; i < dimx; ++i)
+        for (uint j = 0; j < dimy; ++j)
+            for (uint k = 0; k < dimz; ++k)
+            {
+                (*this) (i, j, k) = tocopy (i, j, k);
+            }
+}
+
+
+
+//MEMBERS TO GET AND SET PRIVATE PARAMETERS
+
+template <typename T>
+void im3d::image3d<T>::setdimx (uint const& x)
+{
+    this->dimx = x;
+    this->rawimage.resize (0);
+    this->rawimage.resize ( this->dimx * this->dimy * this->dimz);
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::setdimy (uint const& y)
+{
+    this->dimy = y;
+    this->rawimage.resize (0);
+    this->rawimage.resize ( this->dimx * 
