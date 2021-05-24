@@ -159,4 +159,38 @@ im3d::image3d<T>& im3d::image3d<T>::operator= (S const& toassign)
     #pragma omp parallel for
     for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
     {
-        this->rawimage[i] = stati
+        this->rawimage[i] = static_cast<T> (toassign);
+    }
+
+    return *this;
+}
+
+
+template <typename T>
+template <typename S>
+im3d::image3d<T>& im3d::image3d<T>::operator= (image3d<S> const& toassign)
+{
+    this->setdim (toassign.getdimx(), toassign.getdimy(), toassign.getdimz() );
+    this->seth (toassign.gethx(), toassign.gethy(), toassign.gethz() );
+
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx; ++i)
+        for (uint j = 0; j < this->dimy; ++j)
+            for (uint k = 0; k < this->dimz; ++k)
+            {
+                (*this) (i, j, k) = static_cast<T> (toassign (i, j, k) );
+            }
+
+    return *this;
+}
+
+
+
+template <typename T>
+template <typename S>
+im3d::image3d<T>& im3d::image3d<T>::operator += (S const& addend)
+{
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+    {
+        th
