@@ -122,4 +122,41 @@ void im3d::image3d<T>::sethy (double const& hy)
 template <typename T>
 void im3d::image3d<T>::sethz (double const& hz)
 {
-    this->h
+    this->hz = hz;
+    return;
+}
+
+
+template <typename T>
+void im3d::image3d<T>::seth (double const& hx, double const& hy, double const& hz)
+{
+    this->hx = hx;
+    this->hy = hy;
+    this->hz = hz;
+    return;
+}
+
+//USEFULL OVERLOADING OF VAROIUS OPERATORS
+
+template <typename T>
+T im3d::image3d<T>::operator() (uint const& i, uint const& j, uint const& k) const
+{
+    return rawimage[ this->dimy * this->dimz * i + this->dimz * j + k ];
+}
+
+
+template <typename T>
+T& im3d::image3d<T>::operator() (uint const& i, uint const& j, uint const& k)
+{
+    return rawimage[ this->dimy * this->dimz * i + this->dimz * j + k ];
+}
+
+
+template <typename T>
+template <typename S>
+im3d::image3d<T>& im3d::image3d<T>::operator= (S const& toassign)
+{
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+    {
+        this->rawimage[i] = stati
