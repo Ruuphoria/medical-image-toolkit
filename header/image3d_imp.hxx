@@ -330,4 +330,37 @@ im3d::image3d<T>& im3d::image3d<T>::operator /= (image3d<S> const& factor)
             this->dimz == factor.getdimz() )
     {
         #pragma omp parallel for
-        for (uint i = 0; i < th
+        for (uint i = 0; i < this->dimx; ++i)
+            for (uint j = 0; j < this->dimy; ++j)
+                for (uint k = 0; k < this->dimz; ++k)
+                {
+                    (*this) (i, j, k) /= static_cast<T> (factor (i, j, k) );
+                }
+    }
+    else
+    {
+        std::cout << "WARNING::image3d::operator/= : dimensions must agree" << std::endl;
+    }
+
+    return *this;
+}
+
+
+template <typename S, typename R>
+im3d::image3d<S> const im3d::operator + (image3d<S> const& addend1, R const& addend2)
+{
+    image3d<S> sum (addend1);
+    return sum += addend2;
+}
+
+
+template <typename S, typename R>
+im3d::image3d<S> const im3d::operator - (image3d<S> const& addend1, R const& addend2)
+{
+    image3d<S> sum (addend1);
+    return sum -= addend2;
+}
+
+
+template <typename S, typename R>
+im3d::image3d<S> const im3d::operator * (image3d<S> const& factor1, R const& factor2
