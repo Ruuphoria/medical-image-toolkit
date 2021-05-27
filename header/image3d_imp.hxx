@@ -259,4 +259,38 @@ im3d::image3d<T>& im3d::image3d<T>::operator -= (image3d<S> const& addend)
                     (*this) (i, j, k) -= static_cast<T> (addend (i, j, k) );
                 }
     }
-   
+    else
+    {
+        std::cout << "WARNING::image3d::operator-= : dimensions must agree" << std::endl;
+    }
+
+    return *this;
+}
+
+
+template <typename T>
+template <typename S>
+im3d::image3d<T>& im3d::image3d<T>::operator *= (S const& factor)
+{
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+    {
+        this->rawimage[i] *= static_cast<T> (factor);
+    }
+
+    return *this;
+}
+
+
+template <typename T>
+template <typename S>
+im3d::image3d<T>& im3d::image3d<T>::operator *= (image3d<S> const& factor)
+{
+    if (this->dimx == factor.getdimx() &&
+            this->dimy == factor.getdimy() &&
+            this->dimz == factor.getdimz() )
+    {
+        #pragma omp parallel for
+        for (uint i = 0; i < this->dimx; ++i)
+            for (uint j = 0; j < this->dimy; ++j)
+                for (uint k = 0; k < this->
