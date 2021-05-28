@@ -363,4 +363,36 @@ im3d::image3d<S> const im3d::operator - (image3d<S> const& addend1, R const& add
 
 
 template <typename S, typename R>
-im3d::image3d<S> const im3d::operator * (image3d<S> const& factor1, R const& factor2
+im3d::image3d<S> const im3d::operator * (image3d<S> const& factor1, R const& factor2)
+{
+    image3d<S> prod (factor1);
+    return prod *= factor2;
+}
+
+
+template <typename S, typename R>
+im3d::image3d<S> const im3d::operator / (image3d<S> const& factor1, R const& factor2)
+{
+    image3d<S> prod (factor1);
+    return prod /= factor2;
+}
+
+
+
+//MEMBERS WORKING ON IMAGE'S VALUES
+
+
+template <typename S, typename R>
+S const im3d::scalarprod ( image3d<S> const& factor1, image3d<R> const& factor2 )
+{
+    if (factor2.dimx == factor1.dimx &&
+            factor2.dimy == factor1.dimy &&
+            factor2.dimz == factor1.dimz )
+    {
+        S result (0);
+
+        #pragma omp parallel for reduction (+:result)
+        for (uint i = 0; i < factor1.dimx * factor1.dimy * factor1.dimz; ++i)
+        {
+            result += factor1.rawimage[i] * static_cast<S> (factor2.rawimage[i]);
+        }
