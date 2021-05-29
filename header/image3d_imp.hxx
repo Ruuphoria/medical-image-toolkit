@@ -471,4 +471,38 @@ void im3d::image3d<T>::crop (image3d<T>& res,
     }
 
     // if 2d, set zstart=zend=0
-    if (this->dimz ==
+    if (this->dimz == 1)
+    {
+        zstart = 0;
+        zend = 0;
+    }
+    // check if z coordinates are inside the image and start is smaller than end
+    else
+    {
+        if (zstart > this->dimz)
+        {
+            zstart = this->dimz - 1;
+        }
+        if (zend > this->dimz)
+        {
+            zend = this->dimz - 1;
+        }
+        if (zstart > zend)
+        {
+            uint aux = zstart;
+            zstart = zend;
+            zend = aux;
+        }
+    }
+
+    int newdimx = xend - xstart + 1;
+    int newdimy = yend - ystart + 1;
+    int newdimz = zend - zstart + 1;
+
+    res.setdim ( newdimx, newdimy, newdimz);
+    res.seth ( this->hx, this->hy, this->hz);
+
+    #pragma omp parallel for
+    for (uint i = 0; i < res.getdimx(); ++i)
+        for (uint j = 0; j < res.getdimy(); ++j)
+            for (uint k = 0; k < res.getdi
