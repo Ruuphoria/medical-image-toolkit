@@ -396,3 +396,37 @@ S const im3d::scalarprod ( image3d<S> const& factor1, image3d<R> const& factor2 
         {
             result += factor1.rawimage[i] * static_cast<S> (factor2.rawimage[i]);
         }
+
+        return result;
+    }
+    else
+    {
+        std::cout << "WARNING::scalarprod: dimensions must agree, 0 is returned" << std::endl;
+        return 0;
+    }
+}
+
+
+
+template <typename S, typename R>
+S const im3d::scalarprod_L2 ( image3d<S> const& factor1, image3d<R> const& factor2 )
+{
+
+    if (factor2.hx == factor1.hx &&
+            factor2.hy == factor1.hy &&
+            factor2.hz == factor1.hz )
+    {
+        return factor1.hx * factor1.hy * factor1.hz * scalarprod (factor1, factor2);
+    }
+    else
+    {
+        std::cout << "WARNING::scalarprod_L2: spacing must agree, 0 is returned" << std::endl;
+        return 0;
+    }
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::crop (image3d<T>& res,
+                             uint const& XSTART, uint const& YSTART, uint const& ZSTART,
