@@ -430,3 +430,45 @@ S const im3d::scalarprod_L2 ( image3d<S> const& factor1, image3d<R> const& facto
 template <typename T>
 void im3d::image3d<T>::crop (image3d<T>& res,
                              uint const& XSTART, uint const& YSTART, uint const& ZSTART,
+                             uint const& XEND, uint const& YEND, uint const& ZEND) const
+{
+
+    uint xstart (XSTART), ystart (YSTART), zstart (ZSTART), xend (XEND), yend (YEND), zend (ZEND);
+
+    // check if coordinates are inside the image
+    if (xend > this->dimx)
+    {
+        xend = this->dimx - 1;
+    }
+    if (xstart > this->dimx)
+    {
+        xstart = this->dimx - 1;
+    }
+
+    if (ystart > this->dimy)
+    {
+        ystart = this->dimy - 1;
+    }
+    if (yend > this->dimy)
+    {
+        yend = this->dimy - 1;
+    }
+
+
+    // check if starts are smaller than ends
+    if (xstart > xend)
+    {
+        uint aux = xstart;
+        xstart = xend;
+        xend = aux;
+    }
+
+    if (ystart > yend)
+    {
+        uint aux = ystart;
+        ystart = yend;
+        yend = aux;
+    }
+
+    // if 2d, set zstart=zend=0
+    if (this->dimz ==
