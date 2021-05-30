@@ -544,3 +544,31 @@ void im3d::image3d<T>::crop (image3d<T>& res,
         yend = 0;
     }
     if (zend < 0)
+    {
+        zend = 0;
+    }
+
+    //  uint xs = floor(dimx*xstart), ys = floor(dimy*ystart), zs = floor(dimz*zstart);
+    //  uint xe = ceil(dimx*xend), ye = ceil(dimy*yend), ze = ceil(dimz*zend);
+
+    uint xs = floor (xstart / hx), ys = floor (ystart / hy), zs = floor (zstart / hz);
+    uint xe = ceil (xend / hx), ye = ceil (yend / hy), ze = ceil (zend / hz);
+
+    // in crop will be checked the indexes
+    this->crop (res, xs, ys, zs, xe, ye, ze);
+
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool increase) const
+{
+
+    // decreasing resolution
+    if (!increase)
+    {
+        res.setdim (ceil ( static_cast<T> (this->dimx) / static_cast<T> (ratio) ),
+                    ceil ( static_cast<T> (this->dimy) / static_cast<T> (ratio) ),
+                    ceil ( static_cast<T> (this->dimz) 
