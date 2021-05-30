@@ -571,4 +571,32 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
     {
         res.setdim (ceil ( static_cast<T> (this->dimx) / static_cast<T> (ratio) ),
                     ceil ( static_cast<T> (this->dimy) / static_cast<T> (ratio) ),
-                    ceil ( static_cast<T> (this->dimz) 
+                    ceil ( static_cast<T> (this->dimz) / static_cast<T> (ratio) ) );
+
+        res.seth ( this->hx * ratio, this->hy * ratio, this->hz * ratio );
+
+        #pragma omp parallel for
+        for (uint i = 0; i < res.getdimx(); ++i)
+            for (uint j = 0; j < res.getdimy(); ++j)
+                for (uint k = 0; k < res.getdimz(); ++k)
+                {
+                    res (i, j, k) = (*this) (i * ratio, j * ratio, k * ratio) ;
+                }
+    }
+
+    // increasing resolution
+    else
+    {
+        // make ratio a power of 2
+        while ( (ratio % 2) != 0 )
+        {
+            ++ratio;
+        }
+
+        image3d<T> resold (*this);
+
+        for (uint r = 2; r <= ratio; r *= 2)
+        {
+            res.setdim ( (this->dimx - 1) *r + 1, (this->dimy - 1) *r + 1, (this->dimz - 1) *r + 1 );
+            res.seth (this->hx / static_cast<double> (r),
+                      this->
