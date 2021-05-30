@@ -505,4 +505,42 @@ void im3d::image3d<T>::crop (image3d<T>& res,
     #pragma omp parallel for
     for (uint i = 0; i < res.getdimx(); ++i)
         for (uint j = 0; j < res.getdimy(); ++j)
-            for (uint k = 0; k < res.getdi
+            for (uint k = 0; k < res.getdimz(); ++k)
+            {
+                res (i, j, k) = (*this) (i + xstart, j + ystart, k + zstart) ;
+            }
+
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::crop (image3d<T>& res,
+                             double const& XSTART, double const& YSTART, double const& ZSTART,
+                             double const& XEND, double const& YEND, double const& ZEND) const
+{
+    double xstart (XSTART), ystart (YSTART), zstart (ZSTART), xend (XEND), yend (YEND), zend (ZEND);
+
+    // if negative set it to zero
+    if (xstart < 0)
+    {
+        xstart = 0;
+    }
+    if (ystart < 0)
+    {
+        ystart = 0;
+    }
+    if (zstart < 0)
+    {
+        zstart = 0;
+    }
+    if (xend < 0)
+    {
+        xend = 0;
+    }
+    if (yend < 0)
+    {
+        yend = 0;
+    }
+    if (zend < 0)
