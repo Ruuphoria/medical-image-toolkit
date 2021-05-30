@@ -599,4 +599,27 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
         {
             res.setdim ( (this->dimx - 1) *r + 1, (this->dimy - 1) *r + 1, (this->dimz - 1) *r + 1 );
             res.seth (this->hx / static_cast<double> (r),
-                      this->
+                      this->hy / static_cast<double> (r),
+                      this->hz / static_cast<double> (r) );
+
+            // copying resold elements every 2 pixels
+            #pragma omp parallel for
+            for (uint i = 0; i < res.getdimx(); i += 2)
+                for (uint j = 0; j < res.getdimy(); j += 2)
+                    for (uint k = 0; k < res.getdimz(); k += 2)
+                    {
+                        res (i, j, k) = resold (i / 2, j / 2, k / 2) ;
+                    }
+
+
+            // 3d case
+            if (dimz != 1)
+            {
+
+                #pragma omp parallel for
+                for (uint i = 0; i < res.getdimx() - 2; i += 2)
+                    for (uint j = 0; j < res.getdimy() - 2; j += 2)
+                        for (uint k = 0; k < res.getdimz() - 2; k += 2)
+                        {
+
+                            res (i, j, k + 1) = ( res (i, j, k
