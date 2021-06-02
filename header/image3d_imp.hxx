@@ -622,4 +622,18 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
                         for (uint k = 0; k < res.getdimz() - 2; k += 2)
                         {
 
-                            res (i, j, k + 1) = ( res (i, j, k
+                            res (i, j, k + 1) = ( res (i, j, k) + res (i, j, k + 2) ) / 2.;
+
+                            res (i + 1, j, k) = ( res (i, j, k) + res (i + 2, j, k) ) / 2.;
+
+                            res (i, j + 1, k) = ( res (i, j, k) + res (i, j + 2, k) ) / 2.;
+
+                            res (i + 1, j + 1, k + 1) = ( res (i, j, k) + res (i, j, k + 2) +
+                                                          res (i, j + 2, k) + res (i, j + 2, k + 2) +
+                                                          res (i + 2, j, k) + res (i + 2, j, k + 2) +
+                                                          res (i + 2, j + 2, k) + res (i + 2, j + 2, k + 2) ) / 8.;
+
+                            res (i + 1, j, k + 1) = ( res (i, j, k) + res (i, j, k + 2) +
+                                                      res (i + 2, j, k) + res (i + 2, j, k + 2) ) / 4.;
+
+     
