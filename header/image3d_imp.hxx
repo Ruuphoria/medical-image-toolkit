@@ -636,4 +636,20 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
                             res (i + 1, j, k + 1) = ( res (i, j, k) + res (i, j, k + 2) +
                                                       res (i + 2, j, k) + res (i + 2, j, k + 2) ) / 4.;
 
-     
+                            res (i + 1, j + 1, k) = ( res (i, j, k) + res (i + 2, j, k) +
+                                                      res (i, j + 2, k) + res (i + 2, j + 2, k) ) / 4.;
+
+                            res (i, j + 1, k + 1) = ( res (i, j, k) + res (i, j + 2, k) +
+                                                      res (i, j, k + 2) + res (i, j + 2, k + 2) ) / 4.;
+                        }
+
+
+                //  complete interpolation on the last three faces
+                //  of the domain with an even index
+                uint X (res.getdimx() - 1), Y (res.getdimy() - 1), Z (res.getdimz() - 1);
+
+                // face i=X
+                for (uint j = 0; j < res.getdimy() - 2; j += 2)
+                    for (uint k = 0; k < res.getdimz() - 2; k += 2)
+                    {
+                        res (X, j, k + 1) = ( r
