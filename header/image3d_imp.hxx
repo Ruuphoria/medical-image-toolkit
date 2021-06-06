@@ -682,3 +682,29 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
                 for (uint i = 0; i < res.getdimx() - 2; i += 2)
                 {
                     res (i + 1, Y, Z) = ( res (i, Y, Z) + res (i + 2, Y, Z) ) / 2.;
+                }
+
+                for (uint j = 0; j < res.getdimy() - 2; j += 2)
+                {
+                    res (X, j + 1, Z) = ( res (X, j, Z) + res (X, j + 2, Z) ) / 2.;
+                }
+
+                for (uint k = 0; k < res.getdimz() - 2; k += 2)
+                {
+                    res (X, Y, k + 1) = ( res (X, Y, k) + res (X, Y, k + 2) ) / 2.;
+                }
+
+            }// end 3d case
+
+            // 2d case
+            else
+            {
+                for (uint i = 0; i < res.getdimx() - 2; i += 2)
+                    for (uint j = 0; j < res.getdimy() - 2; j += 2)
+                    {
+
+                        res (i + 1, j, 0) = ( res (i, j, 0) + res (i + 2, j, 0) ) / 2.;
+
+                        res (i, j + 1, 0) = ( res (i, j, 0) + res (i, j + 2, 0) ) / 2.;
+
+                        re
