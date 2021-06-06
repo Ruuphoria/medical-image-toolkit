@@ -707,4 +707,28 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
 
                         res (i, j + 1, 0) = ( res (i, j, 0) + res (i, j + 2, 0) ) / 2.;
 
-                        re
+                        res (i + 1, j + 1, 0) = ( res (i, j, 0) + res (i + 2, j, 0) +
+                                                  res (i, j + 2, 0) + res (i + 2, j + 2, 0) ) / 4.;
+                    }
+
+                //  complete interpolation on the last two edges
+                //  of the domain with an even index
+                uint X (res.getdimx() - 1), Y (res.getdimy() - 1);
+
+                //  edge i=X
+                for (uint j = 0; j < res.getdimy() - 2; j += 2)
+                {
+                    res (X, j + 1, 0) = ( res (X, j, 0) + res (X, j + 2, 0) ) / 2.;
+                }
+
+                //  edge j=Y
+                for (uint i = 0; i < res.getdimx() - 2; i += 2)
+                {
+                    res (i + 1, Y, 0) = ( res (i, Y, 0) + res (i + 2, Y, 0) ) / 2.;
+                }
+
+            }// end 2d case
+
+            resold = res;
+
+        }// end for o
