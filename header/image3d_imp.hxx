@@ -665,4 +665,20 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
                         res (i, Y, k + 1) = ( res (i, Y, k) + res (i, Y, k + 2) ) / 2.;
                         res (i + 1, Y, k) = ( res (i, Y, k) + res (i + 2, Y, k) ) / 2.;
                         res (i + 1, Y, k + 1) = ( res (i, Y, k) + res (i, Y, k + 2) +
-                                             
+                                                  res (i + 2, Y, k) + res (i + 2, Y, k + 2) ) / 4.;
+                    }
+
+                // face k=Z
+                for (uint i = 0; i < res.getdimx() - 2; i += 2)
+                    for (uint j = 0; j < res.getdimy() - 2; j += 2)
+                    {
+                        res (i + 1, j, Z) = ( res (i, j, Z) + res (i + 2, j, Z) ) / 2.;
+                        res (i, j + 1, Z) = ( res (i, j, Z) + res (i, j + 2, Z) ) / 2.;
+                        res (i + 1, j + 1, Z) = ( res (i, j, Z) + res (i + 2, j, Z) +
+                                                  res (i, j + 2, Z) + res (i + 2, j + 2, Z) ) / 4.;
+                    }
+
+                // three common edges
+                for (uint i = 0; i < res.getdimx() - 2; i += 2)
+                {
+                    res (i + 1, Y, Z) = ( res (i, Y, Z) + res (i + 2, Y, Z) ) / 2.;
