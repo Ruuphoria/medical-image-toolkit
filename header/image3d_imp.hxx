@@ -731,4 +731,41 @@ void im3d::image3d<T>::change_resolution (image3d<T>& res, uint ratio, bool incr
 
             resold = res;
 
-        }// end for o
+        }// end for on r = 2...ratio
+
+
+    }// end increasing resolution
+    return;
+}
+
+
+
+template <typename T>
+template <typename S>
+void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
+{
+
+    // CASE OF 3D IMAGES
+    if (dimz > 1)
+    {
+
+        if (res.size() != 3)
+        {
+            res.resize (3);
+        }
+        for (uint i = 0; i < 3; ++i)
+        {
+            res[i].setdim (this->dimx, this->dimy, this->dimz);
+            res[i].seth (this->hx, this->hy, this->hz);
+        }
+
+        #pragma omp parallel
+        {
+            // starting parallel section
+
+            #pragma omp for
+            for (uint i = 1; i < this->dimx - 1; ++i)
+                for (uint j = 0; j < this->dimy; ++j)
+                    for (uint k = 0; k < this->dimz; ++k)
+                        res[0] (i, j, k) =
+            
