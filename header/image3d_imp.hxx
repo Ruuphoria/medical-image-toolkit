@@ -768,4 +768,20 @@ void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
                 for (uint j = 0; j < this->dimy; ++j)
                     for (uint k = 0; k < this->dimz; ++k)
                         res[0] (i, j, k) =
-            
+                            (static_cast<S> ( (*this) (i + 1, j, k) ) -
+                             static_cast<S> ( (*this) (i - 1, j, k) ) ) / (2.*hx) ;
+
+            #pragma omp for
+            for (uint i = 0; i < this->dimx; ++i)
+                for (uint j = 1; j < this->dimy - 1; ++j)
+                    for (uint k = 0; k < this->dimz; ++k)
+                        res[1] (i, j, k) =
+                            (static_cast<S> ( (*this) (i, j + 1, k) ) -
+                             static_cast<S> ( (*this) (i, j - 1, k) ) ) / (2.*hy) ;
+
+            #pragma omp for
+            for (uint i = 0; i < this->dimx; ++i)
+                for (uint j = 0; j < this->dimy; ++j)
+                    for (uint k = 1; k < this->dimz - 1; ++k)
+                        res[2] (i, j, k) =
+                            ( static_cast<S> ( (*
