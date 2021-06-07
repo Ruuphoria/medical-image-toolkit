@@ -802,4 +802,19 @@ void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
                                                  static_cast<S> ( (*this) (dimx - 3, j, k) ) ) / (2.*hx);
             }
 
-    
+        for (uint i = 0; i < this->dimx; ++i)
+            for (uint k = 0; k < this->dimz; ++k)
+            {
+                res[1] (i, 0, k) = ( 4 * static_cast<S> ( (*this) (i, 1, k) ) -
+                                     3 * static_cast<S> ( (*this) (i, 0, k) ) -
+                                     static_cast<S> ( (*this) (i, 2, k) ) ) / (2.*hy) ;
+                res[1] (i, this->dimy - 1, k) = (3 * static_cast<S> ( (*this) (i, dimy - 1, k) ) -
+                                                 4 * static_cast<S> ( (*this) (i, dimy - 2, k) ) +
+                                                 static_cast<S> ( (*this) (i, dimy - 3, k) ) ) / (2.*hy);
+            }
+
+        for (uint i = 0; i < this->dimx; ++i)
+            for (uint j = 0; j < this->dimy; ++j)
+            {
+                res[2] (i, j, 0) = ( 4 * static_cast<S> ( (*this) (i, j, 1) ) -
+                                     3 * static_cast<S> ( (*this
