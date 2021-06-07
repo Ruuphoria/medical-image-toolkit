@@ -784,4 +784,22 @@ void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
                 for (uint j = 0; j < this->dimy; ++j)
                     for (uint k = 1; k < this->dimz - 1; ++k)
                         res[2] (i, j, k) =
-                            ( static_cast<S> ( (*
+                            ( static_cast<S> ( (*this) (i, j, k + 1) ) -
+                              static_cast<S> ( (*this) (i, j, k - 1) ) ) / (2.*hz) ;
+
+        }   // ending parallel section
+
+        // boundary values
+
+        for (uint j = 0; j < this->dimy; ++j)
+            for (uint k = 0; k < this->dimz; ++k)
+            {
+                res[0] (0, j, k) = ( 4 * static_cast<S> ( (*this) (1, j, k) ) -
+                                     3 * static_cast<S> ( (*this) (0, j, k) ) -
+                                     static_cast<S> ( (*this) (2, j, k) ) ) / (2.*hx) ;
+                res[0] (this->dimx - 1, j, k) = (3 * static_cast<S> ( (*this) (dimx - 1, j, k) ) -
+                                                 4 * static_cast<S> ( (*this) (dimx - 2, j, k) ) +
+                                                 static_cast<S> ( (*this) (dimx - 3, j, k) ) ) / (2.*hx);
+            }
+
+    
