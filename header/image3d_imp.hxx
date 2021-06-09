@@ -844,4 +844,26 @@ void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
             // starting parallel section
 
             #pragma omp for
-            for (uint 
+            for (uint i = 1; i < this->dimx - 1; ++i)
+                for (uint j = 0; j < this->dimy; ++j)
+                    res[0] (i, j, 0) =
+                        ( static_cast<S> ( (*this) (i + 1, j, 0) ) -
+                          static_cast<S> ( (*this) (i - 1, j, 0) ) ) / (2.*hx) ;
+
+            #pragma omp for
+            for (uint i = 0; i < this->dimx; ++i)
+                for (uint j = 1; j < this->dimy - 1; ++j)
+                    res[1] (i, j, 0) =
+                        ( static_cast<S> ( (*this) (i, j + 1, 0) ) -
+                          static_cast<S> ( (*this) (i, j - 1, 0) ) ) / (2.*hy) ;
+
+        }   // ending parallel section
+
+
+        // boundary values
+
+        for (uint j = 0; j < this->dimy; ++j)
+        {
+            res[0] (0, j, 0) = ( 4 * static_cast<S> ( (*this) (1, j, 0) ) -
+                                 3 * static_cast<S> ( (*this) (0, j, 0) ) -
+          
