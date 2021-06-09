@@ -817,4 +817,31 @@ void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
             for (uint j = 0; j < this->dimy; ++j)
             {
                 res[2] (i, j, 0) = ( 4 * static_cast<S> ( (*this) (i, j, 1) ) -
-                                     3 * static_cast<S> ( (*this
+                                     3 * static_cast<S> ( (*this) (i, j, 0) ) -
+                                     static_cast<S> ( (*this) (i, j, 2) ) ) / (2.*hz) ;
+                res[2] (i, j, this->dimz - 1) = (3 * static_cast<S> ( (*this) (i, j, dimz - 1) ) -
+                                                 4 * static_cast<S> ( (*this) (i, j, dimz - 2) ) +
+                                                 static_cast<S> ( (*this) (i, j, dimz - 3) ) ) / (2.*hz);
+            }
+    } // end if(dimz>1)
+
+    // CASE OF 2D IMAGES
+    else
+    {
+
+        if (res.size() != 2)
+        {
+            res.resize (2);
+        }
+        for (uint i = 0; i < 2; ++i)
+        {
+            res[i].setdim (this->dimx, this->dimy, this->dimz);
+            res[i].seth (this->hx, this->hy, this->hz);
+        }
+
+        #pragma omp parallel
+        {
+            // starting parallel section
+
+            #pragma omp for
+            for (uint 
