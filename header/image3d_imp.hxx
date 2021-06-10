@@ -906,3 +906,23 @@ void im3d::vector_abs (image3d<S>& res, std::vector<image3d<R> > const& fun)
     // 3d case
     if (fun.size() == 3 &&
             fun[0].dimx == fun[1].dimx && fun[1].dimx == fun[2].dimx  &&
+            fun[0].dimy == fun[1].dimy && fun[1].dimy == fun[2].dimy  &&
+            fun[0].dimz == fun[1].dimz && fun[1].dimz == fun[2].dimz )
+    {
+        #pragma omp parallel for
+        for (uint i = 0; i < res.dimx * res.dimy * res.dimz; ++i)
+            res.rawimage[i] =
+                static_cast<S> (sqrt ( fun[0].rawimage[i] * fun[0].rawimage[i] +
+                                       fun[1].rawimage[i] * fun[1].rawimage[i] +
+                                       fun[2].rawimage[i] * fun[2].rawimage[i] ) );
+        //note: sqrt works only with float, double or long double
+    }
+
+    // 2d case
+    else if (fun.size() == 2 &&
+             fun[0].dimx == fun[1].dimx &&
+             fun[0].dimy == fun[1].dimy &&
+             fun[0].dimz == fun[1].dimz )
+    {
+        #pragma omp parallel for
+        for (uint i = 0; i <
