@@ -878,4 +878,31 @@ void im3d::image3d<T>::grad (std::vector<image3d<S> >& res) const
                                  3 * static_cast<S> ( (*this) (i, 0, 0) ) -
                                  static_cast<S> ( (*this) (i, 2, 0) ) ) / (2.*hy) ;
             res[1] (i, this->dimy - 1, 0) = ( 3 * static_cast<S> ( (*this) (i, dimy - 1, 0) ) -
-                                              4 * static_cast<S
+                                              4 * static_cast<S> ( (*this) (i, dimy - 2, 0) ) +
+                                              static_cast<S> ( (*this) (i, dimy - 3, 0) ) ) / (2.*hy);
+        }
+
+    }// end else ( CASE OF 2D IMAGES)
+
+    return;
+}
+
+
+
+template <typename S, typename R>
+void im3d::vector_abs (image3d<S>& res, std::vector<image3d<R> > const& fun)
+{
+    // check dimensions of input vector
+    if (fun.size() != 2 && fun.size() != 3)
+    {
+        std::cout << "In image3d::vector_abs: input vector could be only 2d or 3d, ";
+        std::cout << fun.size() << " is a not allowed dimension." << std::endl;
+        return;
+    }
+
+    res.setdim (fun[0].dimx, fun[0].dimy, fun[0].dimz );
+    res.seth (fun[0].hx, fun[0].hy, fun[0].hz );
+
+    // 3d case
+    if (fun.size() == 3 &&
+            fun[0].dimx == fun[1].dimx && fun[1].dimx == fun[2].dimx  &&
