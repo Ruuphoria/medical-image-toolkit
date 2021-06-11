@@ -925,4 +925,31 @@ void im3d::vector_abs (image3d<S>& res, std::vector<image3d<R> > const& fun)
              fun[0].dimz == fun[1].dimz )
     {
         #pragma omp parallel for
-        for (uint i = 0; i <
+        for (uint i = 0; i < res.dimx * res.dimy * res.dimz; ++i)
+            res.rawimage[i] =
+                static_cast<S> (sqrt ( fun[0].rawimage[i] * fun[0].rawimage[i] +
+                                       fun[1].rawimage[i] * fun[1].rawimage[i] ) );
+        //note: sqrt works only with float, double or long double
+    }
+
+    else
+    {
+        std::cout << "In image3d::vector_abs: dimensions of image3d " <<
+                  "inside input vector must agree" << std::endl;
+        return;
+    }
+
+    return;
+}
+
+
+
+template <typename S, typename R>
+void im3d::div (image3d<S>& res, std::vector<image3d<R> > const& fun)
+{
+
+    // check dimensions of input vector
+    if (fun.size() != 2 && fun.size() != 3)
+    {
+        std::cout << "In image3d::div: input vector could be only 2d or 3d, ";
+        std::cout << fun.size() << " is a not allowed dimension." << s
