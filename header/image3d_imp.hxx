@@ -952,4 +952,27 @@ void im3d::div (image3d<S>& res, std::vector<image3d<R> > const& fun)
     if (fun.size() != 2 && fun.size() != 3)
     {
         std::cout << "In image3d::div: input vector could be only 2d or 3d, ";
-        std::cout << fun.size() << " is a not allowed dimension." << s
+        std::cout << fun.size() << " is a not allowed dimension." << std::endl;
+        return;
+    }
+
+    res.setdim (fun[0].getdimx(), fun[0].getdimy(), fun[0].getdimz() );
+    res.seth (fun[0].gethx(), fun[0].gethy(), fun[0].gethz() );
+
+    double hx = res.gethx(), hy = res.gethy(), hz = res.gethz();
+    uint X = res.getdimx(), Y = res.getdimy(), Z = res.getdimz();
+
+    // 2d case
+    if (fun.size() == 2 &&
+            fun[0].getdimx() == fun[1].getdimx() &&
+            fun[0].getdimy() == fun[1].getdimy() &&
+            fun[0].getdimz() == fun[1].getdimz() )
+    {
+
+        #pragma omp parallel for
+        for (uint i = 1; i < X - 1; ++i)
+            for (uint j = 1; j < Y - 1; ++j)
+                res (i, j, 0) =
+                    ( (static_cast<S> (fun[0] (i + 1, j, 0) ) -
+                       static_cast<S> (fun[0] (i - 1, j, 0) ) ) / (2.*hx) +
+                     
