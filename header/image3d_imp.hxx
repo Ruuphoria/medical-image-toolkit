@@ -1014,4 +1014,24 @@ void im3d::div (image3d<S>& res, std::vector<image3d<R> > const& fun)
                 ( (3 * static_cast<S> (fun[0] (X - 1, j, 0) ) -
                    4 * static_cast<S> (fun[0] (X - 2, j, 0) ) +
                    static_cast<S> (fun[0] (X - 3, j, 0) ) ) / (2.*hx) +
-      
+                  (static_cast<S> (fun[1] (X - 1, j + 1, 0) ) -
+                   static_cast<S> (fun[1] (X - 1, j - 1, 0) ) ) / (2.*hy) );
+        }
+
+        //angles
+
+        //i=0, j=0, k=0
+        res (0, 0, 0) =
+            ( (4 * static_cast<S> (fun[0] (1, 0, 0) ) -
+               3 * static_cast<S> (fun[0] (0, 0, 0) ) -
+               static_cast<S> (fun[0] (2, 0, 0) ) ) / (2.*hx) +
+              (4 * static_cast<S> (fun[1] (0, 1, 0) ) -
+               3 * static_cast<S> (fun[1] (0, 0, 0) ) -
+               static_cast<S> (fun[1] (0, 2, 0) ) ) / (2.*hy) );
+
+        //i=X-1, j=0, k=0
+        res (X - 1, 0, 0) =
+            ( (3 * static_cast<S> (fun[0] (X - 1, 0, 0) ) -
+               4 * static_cast<S> (fun[0] (X - 2, 0, 0) ) +
+               static_cast<S> (fun[0] (X - 3, 0, 0) ) ) / (2.*hx) +
+            
