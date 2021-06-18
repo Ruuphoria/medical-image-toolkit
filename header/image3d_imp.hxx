@@ -1051,4 +1051,23 @@ void im3d::div (image3d<S>& res, std::vector<image3d<R> > const& fun)
         res (X - 1, Y - 1, 0) =
             ( (3 * static_cast<S> (fun[0] (X - 1, Y - 1, 0) ) -
                4 * static_cast<S> (fun[0] (X - 2, Y - 1, 0) ) +
-               static_cast<S> (fun[0] (X - 3, Y - 1, 0) ) ) /
+               static_cast<S> (fun[0] (X - 3, Y - 1, 0) ) ) / (2.*hx) +
+              (3 * static_cast<S> (fun[1] (X - 1, Y - 1, 0) ) -
+               4 * static_cast<S> (fun[1] (X - 1, Y - 2, 0) ) +
+               static_cast<S> (fun[1] (X - 1, Y - 3, 0) ) ) / (2.*hy) );
+    }
+
+    // 3d case
+    else if (fun.size() == 3 &&
+             fun[0].getdimx() == fun[1].getdimx() && fun[1].getdimx() == fun[2].getdimx()  &&
+             fun[0].getdimy() == fun[1].getdimy() && fun[1].getdimy() == fun[2].getdimy()  &&
+             fun[0].getdimz() == fun[1].getdimz() && fun[1].getdimz() == fun[2].getdimz() )
+    {
+
+        #pragma omp parallel for
+        for (uint i = 1; i < X - 1; ++i)
+            for (uint j = 1; j < Y - 1; ++j)
+                for (uint k = 1; k < Z - 1; ++k)
+                    res (i, j, k) =
+                        ( (static_cast<S> (fun[0] (i + 1, j, k) ) -
+                        
