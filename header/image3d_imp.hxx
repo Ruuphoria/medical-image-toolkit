@@ -1367,4 +1367,54 @@ void im3d::div (image3d<S>& res, std::vector<image3d<R> > const& fun)
                4 * static_cast<S> (fun[1] (X - 1, Y - 2, Z - 1) ) +
                static_cast<S> (fun[1] (X - 1, Y - 3, Z - 1) ) ) / (2.*hy) +
               (3 * static_cast<S> (fun[2] (X - 1, Y - 1, Z - 1) ) -
-               4 * static_cast<S> (fu
+               4 * static_cast<S> (fun[2] (X - 1, Y - 1, Z - 2) ) +
+               static_cast<S> (fun[2] (X - 1, Y - 1, Z - 3) ) ) / (2.*hz) );
+
+    }
+
+    else
+    {
+        std::cout << "In image3d::div: dimensions of image3d inside " <<
+                  "input vector must agree" << std::endl;
+        return;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+T const im3d::image3d<T>::norm1 () const
+{
+    T norm = 0;
+
+    #pragma omp parallel for reduction (+:norm)
+    for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+    {
+        norm += std::abs (this->rawimage[i]);
+    }
+
+    return norm;
+}
+
+
+
+template <typename T>
+T const im3d::image3d<T>::normL1 () const
+{
+    return this->norm1() * this->hx * this->hy * this->hz;
+}
+
+
+
+template <typename T>
+T const im3d::image3d<T>::norm2 () const
+{
+    return sqrt (scalarprod (*this, *this) );
+}
+
+
+
+template <typename T>
+T co
