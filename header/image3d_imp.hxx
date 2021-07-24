@@ -1417,4 +1417,50 @@ T const im3d::image3d<T>::norm2 () const
 
 
 template <typename T>
-T co
+T const im3d::image3d<T>::normL2 () const
+{
+    return sqrt (scalarprod_L2 (*this, *this) );
+}
+
+
+
+template <typename T>
+T const im3d::image3d<T>::norminf () const
+{
+    T norminf = std::abs ( (*this) (0, 0, 0) );
+
+    #pragma omp parallel
+    {
+
+        T private_norminf = norminf;
+
+        #pragma omp for nowait
+        for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+            if ( private_norminf < this->rawimage[i] )
+            {
+                private_norminf = std::abs (this->rawimage[i]);
+            }
+
+        #pragma omp critical
+        {
+            norminf = (private_norminf > norminf) ? private_norminf : norminf ;
+        }
+
+    }
+
+    return norminf;
+}
+
+
+template <typename T>
+T const im3d::image3d<T>::max () const
+{
+    T shared_max ( (*this) (0, 0, 0) );
+
+    #pragma omp parallel
+    {
+
+        T max (shared_max);
+
+        #pragma omp for nowait
+        for (uint 
