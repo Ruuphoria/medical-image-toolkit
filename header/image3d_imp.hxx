@@ -1463,4 +1463,46 @@ T const im3d::image3d<T>::max () const
         T max (shared_max);
 
         #pragma omp for nowait
-        for (uint 
+        for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+            if ( max < this->rawimage[i] )
+            {
+                max = this->rawimage[i];
+            }
+
+        #pragma omp critical
+        {
+            shared_max = (max > shared_max) ? max : shared_max ;
+        }
+
+    }
+
+    return shared_max;
+}
+
+
+
+template <typename T>
+T const im3d::image3d<T>::min () const
+{
+    T shared_min ( (*this) (0, 0, 0) );
+
+    #pragma omp parallel
+    {
+
+        T min (shared_min);
+
+        #pragma omp for nowait
+        for (uint i = 0; i < this->dimx * this->dimy * this->dimz; ++i)
+            if ( min > this->rawimage[i] )
+            {
+                min = this->rawimage[i];
+            }
+
+        #pragma omp critical
+        {
+            shared_min = (min < shared_min) ? min : shared_min ;
+        }
+
+    }
+
+    return 
