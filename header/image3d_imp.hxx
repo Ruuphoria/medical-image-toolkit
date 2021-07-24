@@ -1505,4 +1505,32 @@ T const im3d::image3d<T>::min () const
 
     }
 
-    return 
+    return shared_min;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::histogram_equalization (image3d<T>& res,
+                                               uint const& quantization) const
+{
+
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    // finding max and min to create bands
+    T max (this->max() ), min (this->min() );
+
+    // initializing a vector to store frequency of each band
+    std::vector<int> frequency (quantization, 0);
+
+    // computing width of each band
+    double band_width (static_cast<double> (floor (max - min) + 1) / static_cast<double> (quantization) );
+
+    // computing frequency of each band
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx; ++i)
+        for (uint j = 0; j < this->dimy; ++j)
+            for ( uint k = 0; k < this->dimz; ++k)
+            {
+        
