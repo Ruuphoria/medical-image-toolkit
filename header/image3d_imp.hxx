@@ -1533,4 +1533,27 @@ void im3d::image3d<T>::histogram_equalization (image3d<T>& res,
         for (uint j = 0; j < this->dimy; ++j)
             for ( uint k = 0; k < this->dimz; ++k)
             {
-        
+                uint index =
+                    static_cast<uint> ( floor (static_cast<double> ( (*this) (i, j, k) - min)
+                                               / band_width) );
+                #pragma omp atomic
+                ++ (frequency[index]);
+            }
+
+    // transforming it in the vector of cumulative frequency
+    for (uint x = 1; x < quantization; ++x)
+    {
+        frequency[x] += frequency[x - 1];
+    }
+
+    // computing cumulative probability
+    int elem_num (this->dimx * this->dimy * this->dimz);
+    std::vector<double> cumulative (quantization, 0.);
+
+    #pragma omp parallel for
+    for (uint x = 0; x < quantization; ++x)
+    {
+        cumulative[x] = static_cast<double> (frequency[x]) / static_cast<double> (elem_num);
+    }
+
+    // modifying original image replacing original
