@@ -1556,4 +1556,38 @@ void im3d::image3d<T>::histogram_equalization (image3d<T>& res,
         cumulative[x] = static_cast<double> (frequency[x]) / static_cast<double> (elem_num);
     }
 
-    // modifying original image replacing original
+    // modifying original image replacing original intensity with the new one computed
+    // using cumulative probability vector
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx; ++i)
+        for (uint j = 0; j < this->dimy; ++j)
+            for ( uint k = 0; k < this->dimz; ++k)
+            {
+                uint index =
+                    static_cast<uint> ( floor (static_cast<double> ( (*this) (i, j, k) - min)
+                                               / band_width) );
+
+                res (i, j, k) =
+                    static_cast<T> (cumulative[index] * static_cast<double> (quantization) );
+            }
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::histogram_equalization (image3d<T>& res) const
+{
+
+    T max (this->max() ), min (this->min() );
+
+    this->histogram_equalization (res, floor ( static_cast<double> (max - min) ) + 1 );
+
+    return;
+}
+
+
+
+template <typename T>
+template <typename S>
+void im3d::image
