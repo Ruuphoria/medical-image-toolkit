@@ -1612,4 +1612,37 @@ void im3d::image3d<T>::im_to_black_and_white (image3d<S>& res,
             for ( uint k = 0; k < this->dimz; ++k)
                 if ( (*this) (i, j, k) < pivot )
                 {
-              
+                    res (i, j, k) = 0 + static_cast<int> (negative);
+                }
+                else
+                {
+                    res (i, j, k) = 1 - static_cast<int> (negative);
+                }
+
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::change_range_of_intensity (T const& max, T const& min)
+{
+    (*this) -= this->min();
+    (*this) /= this->max() / (max - min);
+    (*this) += min;
+
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::select_range_of_intensity (image3d<T>& res, T const& lowerbound,
+                                                  T const& upperbound, int type, T lowervalue, T uppervalue) const
+{
+    if ( lowerbound > upperbound )
+    {
+        std::cout << "WARNING::select_range_of_intensity: upperbound must be greater";
+        std::cout << " than lowerbound" << std::endl;
+        return;
+  
