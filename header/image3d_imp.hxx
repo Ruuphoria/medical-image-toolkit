@@ -1645,4 +1645,37 @@ void im3d::image3d<T>::select_range_of_intensity (image3d<T>& res, T const& lowe
         std::cout << "WARNING::select_range_of_intensity: upperbound must be greater";
         std::cout << " than lowerbound" << std::endl;
         return;
-  
+    }
+
+    T low_external_value = lowerbound;
+    T up_external_value = upperbound;
+
+    if (type > 0)
+    {
+        low_external_value = upperbound;
+    }
+    else if (type == -1)
+    {
+        up_external_value = lowerbound;
+    }
+    else if (type == -2)
+    {
+        low_external_value = lowervalue;
+        up_external_value = uppervalue;
+    }
+
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx; ++i)
+        for (uint j = 0; j < this->dimy; ++j)
+            for ( uint k = 0; k < this->dimz; ++k)
+            {
+                if ( (*this) (i, j, k) < lowerbound )
+                {
+                    res (i, j, k) = low_external_value;
+                }
+                else if ( (*this) (i, j, k) > upperbound )
+                {
+                    res (i
