@@ -1590,4 +1590,26 @@ void im3d::image3d<T>::histogram_equalization (image3d<T>& res) const
 
 template <typename T>
 template <typename S>
-void im3d::image
+void im3d::image3d<T>::im_to_black_and_white (image3d<S>& res,
+                                              double threshold, bool negative) const
+{
+
+    if (threshold > 1 || threshold < 0)
+    {
+        std::cout << "WARNING::im_to_black_and_white: threshold must be between 0 and 1, ";
+        std::cout << "otherwise default value 0.5 is applied" << std::endl;
+        threshold = 0.5;
+    }
+
+    T max (this->max() ), min (this->min() ), pivot (min + (max - min) *threshold);
+
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx; ++i)
+        for (uint j = 0; j < this->dimy; ++j)
+            for ( uint k = 0; k < this->dimz; ++k)
+                if ( (*this) (i, j, k) < pivot )
+                {
+              
