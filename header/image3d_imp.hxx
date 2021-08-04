@@ -1678,4 +1678,43 @@ void im3d::image3d<T>::select_range_of_intensity (image3d<T>& res, T const& lowe
                 }
                 else if ( (*this) (i, j, k) > upperbound )
                 {
-                    res (i
+                    res (i, j, k) = up_external_value;
+                }
+                else
+                {
+                    res (i, j, k) = (*this) (i, j, k);
+                }
+            }
+
+    return;
+}
+
+
+
+template <typename T>
+template <typename S>
+void im3d::image3d<T>::connected_component (image3d<S>& res,
+                                            uint const& i, uint const& j, uint const& k,
+                                            double threshold, bool full_connected, bool binary_output) const
+{
+
+    image3d<S> bw;
+    uint I (i), J (j), K (k);
+
+    // initialize res and resold as a black image and norm1!=0
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    if (I == 0)
+    {
+        ++I;
+    }
+    if (J == 0)
+    {
+        ++J;
+    }
+    if (I >= this->dimx - 1)
+    {
+        I = this->dimx - 2;
+    }
+    
