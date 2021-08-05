@@ -1717,4 +1717,48 @@ void im3d::image3d<T>::connected_component (image3d<S>& res,
     {
         I = this->dimx - 2;
     }
-    
+    if (J >= this->dimy - 1)
+    {
+        J = this->dimy - 2;
+    }
+    if (this->dimz == 1)
+    {
+        K = 0;
+    }
+    else
+    {
+        if (K == 0)
+        {
+            ++K;
+        }
+        if (K >= this->dimz - 1)
+        {
+            K = this->dimz - 2;
+        }
+    }
+
+    this->im_to_black_and_white (bw, threshold);
+
+    if ( bw (I, J, K) == 0 )
+    {
+        this->im_to_black_and_white (bw, threshold, true);
+    }
+
+    res (I, J, K) = 1;
+
+    this->connected_component (res, bw, full_connected);
+
+    if (!binary_output)
+    {
+        this->cc_not_binary_output (res, threshold);
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+template <typename S>
+void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S> const& init,
+                                            double threshold, bool full_connected, bool binary_output) const
