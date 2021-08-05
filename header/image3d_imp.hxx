@@ -1762,3 +1762,33 @@ template <typename T>
 template <typename S>
 void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S> const& init,
                                             double threshold, bool full_connected, bool binary_output) const
+{
+
+    if (init.getdimx() != this->dimx ||
+            init.getdimy() != this->dimy ||
+            init.getdimz() != this->dimz )
+    {
+        std::cout << "WARNING: in image3d::connected_component: dimensions of init must be ";
+        std::cout << "the same of the image" << std::endl;
+        return;
+    }
+
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    image3d<S> bw;
+
+    this->im_to_black_and_white (bw, threshold);
+
+    #pragma omp parallel for
+    for (uint i = 0; i < this->dimx; ++i)
+        for (uint j = 0; j < this->dimy; ++j)
+            for (uint k = 0; k < this->dimz; ++k)
+                if ( init (i, j, k) && bw (i, j, k) )
+                {
+                    res (i, j, k) = static_cast<S> (1);
+                }
+
+    this->connected_component (res, bw, full_connected);
+
+    if (!bina
