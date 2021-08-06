@@ -1791,4 +1791,43 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S> const& i
 
     this->connected_component (res, bw, full_connected);
 
-    if (!bina
+    if (!binary_output)
+    {
+        this->cc_not_binary_output (res, threshold);
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+template <typename S>
+void im3d::image3d<T>::cc_not_binary_output (image3d<S>& res, double threshold) const
+{
+    image3d<S> bw_negative;
+    this->im_to_black_and_white (bw_negative, threshold, true);
+
+    res += bw_negative; // image equal to 1 in cc and in negative output of the black and white threshold
+
+    res *= *this - this->min();
+    res += this->min();
+
+    return;
+}
+
+
+
+template <typename T>
+template <typename S>
+void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
+                                            bool const& full_connected) const
+{
+    image3d<S> resold (this->dimx, this->dimy, this->dimz);
+
+    uint norm1 = 1;
+
+    // 2d case
+    if (this->dimz == 1)
+    {
+        while ( 
