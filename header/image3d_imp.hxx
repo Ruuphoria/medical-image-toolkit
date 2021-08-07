@@ -1851,4 +1851,25 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
                 for (uint j = dimy - 2; j > 0; --j)
                     if ( res (i, j, 0) == 1)
                     {
-   
+                        // west
+                        res (i - 1, j, 0) = 1 * bw (i - 1, j, 0);
+                        // south
+                        res (i, j - 1, 0) = 1 * bw (i, j - 1, 0);
+                        if (full_connected)
+                        {
+                            // south-west
+                            res (i - 1, j - 1, 0) = 1 * bw (i - 1, j - 1, 0);
+                        }
+                    }
+
+            for (uint i = dimx - 2; i > 0; --i)
+                for (uint j = 1; j < dimy - 1; ++j)
+                    if ( res (i, j, 0) == 1)
+                    {
+                        // west
+                        res (i - 1, j, 0) = 1 * bw (i - 1, j, 0);
+                        // north
+                        res (i, j + 1, 0) = 1 * bw (i, j + 1, 0);
+                        if (full_connected)
+                        {
+                   
