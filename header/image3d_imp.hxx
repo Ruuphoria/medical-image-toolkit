@@ -1953,4 +1953,23 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
                                 // up-north-west
                                 res (i - 1, j + 1, k + 1) = 1 * bw (i - 1, j + 1, k + 1);
                             }
-         
+                        }
+
+            // up-south-west
+            for (uint i = dimx - 2; i > 0; --i)
+                for (uint j = dimy - 2; j > 0; --j)
+                    for (uint k = 1; k < dimz - 1; ++k)
+                        if ( res (i, j, k) == 1 )
+                        {
+                            // west
+                            res (i - 1, j, k) = 1 * bw (i - 1, j, k);
+                            // south
+                            res (i, j - 1, k) = 1 * bw (i, j - 1, k);
+                            // up
+                            res (i, j, k + 1) = 1 * bw (i, j, k + 1);
+                            if (full_connected)
+                            {
+                                // south-west
+                                res (i - 1, j - 1, k) = 1 * bw (i - 1, j - 1, k);
+                                // up-west
+       
