@@ -2007,4 +2007,21 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
 
             // down-north-east
             for (uint i = 1; i < dimx - 1; ++i)
-                fo
+                for (uint j = 1; j < dimy - 1; ++j)
+                    for (uint k = dimz - 2; k > 0; --k)
+                        if ( res (i, j, k) == 1 )
+                        {
+                            // east
+                            res (i + 1, j, k) = 1 * bw (i + 1, j, k);
+                            // north
+                            res (i, j + 1, k) = 1 * bw (i, j + 1, k);
+                            // down
+                            res (i, j, k - 1) = 1 * bw (i, j, k - 1);
+                            if (full_connected)
+                            {
+                                // north-east
+                                res (i + 1, j + 1, k) = 1 * bw (i + 1, j + 1, k);
+                                // down-east
+                                res (i + 1, j, k - 1) = 1 * bw (i + 1, j, k - 1);
+                                // down-north
+    
