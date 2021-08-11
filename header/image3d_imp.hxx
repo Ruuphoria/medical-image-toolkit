@@ -1972,4 +1972,22 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
                                 // south-west
                                 res (i - 1, j - 1, k) = 1 * bw (i - 1, j - 1, k);
                                 // up-west
-       
+                                res (i - 1, j, k + 1) = 1 * bw (i - 1, j, k + 1);
+                                // up-south
+                                res (i, j - 1, k + 1) = 1 * bw (i, j - 1, k + 1);
+                                // up-south-west
+                                res (i - 1, j - 1, k + 1) = 1 * bw (i - 1, j - 1, k + 1);
+                            }
+                        }
+
+            // up-south-east
+            for (uint i = 1; i < dimx - 1; ++i)
+                for (uint j = dimy - 2; j > 0; --j)
+                    for (uint k = 1; k < dimz - 1; ++k)
+                        if ( res (i, j, k) == 1 )
+                        {
+                            // east
+                            res (i + 1, j, k) = 1 * bw (i + 1, j, k);
+                            // south
+                            res (i, j - 1, k) = 1 * bw (i, j - 1, k);
+                     
