@@ -2041,4 +2041,20 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
                             // north
                             res (i, j + 1, k) = 1 * bw (i, j + 1, k);
                             // down
-                            res (i, j, 
+                            res (i, j, k - 1) = 1 * bw (i, j, k - 1);
+                            if (full_connected)
+                            {
+                                // north-west
+                                res (i - 1, j + 1, k) = 1 * bw (i - 1, j + 1, k);
+                                // down-west
+                                res (i - 1, j, k - 1) = 1 * bw (i - 1, j, k - 1);
+                                // down-north
+                                res (i, j + 1, k - 1) = 1 * bw (i, j + 1, k - 1);
+                                // down-north-west
+                                res (i - 1, j + 1, k - 1) = 1 * bw (i - 1, j + 1, k - 1);
+                            }
+                        }
+
+            // down-south-west
+            for (uint i = dimx - 2; i > 0; --i)
+                
