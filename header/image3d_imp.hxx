@@ -2108,3 +2108,36 @@ void im3d::image3d<T>::connected_component (image3d<S>& res, image3d<S>& bw,
             norm1 = (res - resold).norm1();
 
             resold = res;
+
+        }//end while
+
+    }// end 3d case
+
+
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::median_filter (image3d<T>& res, int const& radius) const
+{
+    // set proper dimension and spacing of the output
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    int dimx = static_cast<int> (this->dimx);
+    int dimy = static_cast<int> (this->dimy);
+    int dimz = static_cast<int> (this->dimz);
+
+    res = 0;
+    // checking the radius
+    if ( radius > dimx || radius > dimy || (radius > dimz && dimz != 1)
+            || radius <= 0)
+    {
+        std::cout << "WARNING: in image3d::median_filter: radius is bigger than the smaller ";
+        std::cout << "dimension or is negative" << std::endl;
+        return;
+    }
+
+    // computing dimension of the mask
