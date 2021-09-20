@@ -2216,4 +2216,24 @@ void im3d::image3d<T>::median_filter (image3d<T>& res, int const& radius) const
         for (int I = 0; I < radius; ++I)
             for (int J = radius; J < dimy - radius; ++J)
             {
-                for (int i = -r
+                for (int i = -radius; i < radius + 1; ++i)
+                    for (int j = -radius; j < radius + 1; ++j)
+                    {
+                        mask.push_back ( (*this) (std::abs (I + i), J + j, 0) );
+                    }
+
+                sort ( mask.begin() , mask.end() );
+                res (I, J, 0) = mask[dimmask / 2];
+                mask.resize (0);
+            }
+
+        // 4 corners: north-west, north-east, south-east, south-west
+        // north-west
+        for (int I = 0; I < radius; ++I)
+            for (int J = dimy - radius; J < dimy; ++J)
+            {
+                for (int i = -radius; i < radius + 1; ++i)
+                    for (int j = -radius; j < radius + 1; ++j)
+                    {
+                        mask.push_back ( (*this) (std::abs (I + i), dimy - 1 - std::abs (dimy - (J + j) ), 0) );
+   
