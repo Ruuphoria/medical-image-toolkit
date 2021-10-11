@@ -2499,4 +2499,20 @@ void im3d::image3d<T>::median_filter (image3d<T>& res, int const& radius) const
                         for (int j = -radius; j < radius + 1; ++j)
                             for (int k = -radius; k < radius + 1; ++k)
                                 mask.push_back ( (*this) ( I + i ,
-                                     
+                                                           std::abs (J + j) ,
+                                                           dimz - 1 - std::abs (dimz - (K + k) ) ) );
+
+                    sort ( mask.begin() , mask.end() );
+                    res (I, J, K) = mask[dimmask / 2];
+                    mask.resize (0);
+                }
+        // west
+        for (int I = 0; I < radius; ++I)
+            for (int J = radius; J < dimy - radius; ++J)
+                for (int K = dimz - radius; K < dimz; ++K)
+                {
+                    for (int i = -radius; i < radius + 1; ++i)
+                        for (int j = -radius; j < radius + 1; ++j)
+                            for (int k = -radius; k < radius + 1; ++k)
+                                mask.push_back ( (*this) ( std::abs (I + i) ,
+                                                         
