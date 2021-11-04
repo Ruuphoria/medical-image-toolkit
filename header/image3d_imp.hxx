@@ -2751,4 +2751,40 @@ void im3d::image3d<T>::median_filter (image3d<T>& res, int const& radius) const
                             for (int k = -radius; k < radius + 1; ++k)
                                 mask.push_back ( (*this) ( dimx - 1 - std::abs (dimx - (I + i) ) ,
                                                            dimy - 1 - std::abs (dimy - (J + j) ) ,
-                                              
+                                                           dimz - 1 - std::abs (dimz - (K + k) ) ) );
+
+
+                    sort ( mask.begin() , mask.end() );
+                    res (I, J, K) = mask[dimmask / 2];
+                    mask.resize (0);
+                }
+    }// end 3d version
+
+    return;
+}
+
+
+
+template <typename T>
+void im3d::image3d<T>::local_binary_pattern_edge_detector
+(image3d<T>& res, T const& constant, double const& t1, double const& t2) const
+{
+    res.setdim (this->dimx, this->dimy, this->dimz);
+    res.seth (this->hx, this->hy, this->hz);
+
+    if ( this->dimx == 0 || this->dimy == 0 || this->dimz == 0 )
+    {
+        std::cout << "WARNING::local_binary_pattern_edge_detector: actual dimensions " <<
+                  "generate an empty image" << std::endl;
+
+        return;
+    }
+
+    T c (constant);
+
+    if (c < 0)
+    {
+        c = std::abs (c);
+    }
+
+    res 
