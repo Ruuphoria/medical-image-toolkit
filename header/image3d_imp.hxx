@@ -2787,4 +2787,36 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
         c = std::abs (c);
     }
 
-    res 
+    res = 0;
+
+    // initializing mask
+    std::vector<bool> mask;
+
+    int const r = 1, X (this->dimx - r), Y (this->dimy - r); //Z(this->dimz-r);
+
+    // 3d case
+    if ( this->dimz > 1 )
+    {
+        std::cout << "WARNING::local_binary_pattern_edge_detector: 3d version is not yet ";
+        std::cout << "implemented" << std::endl;
+        return;
+    }
+
+    // 2d case
+    else
+    {
+        image3d<T> f (this->dimx, this->dimy, this->dimz), avg, std;
+        mask.resize (8);
+
+        avg = std = f;
+
+        uint aux;
+
+        // compute special avg
+        #pragma omp parallel for
+        for (int i = r; i < X; ++i)
+            for (int j = r; j < Y; ++j)
+            {
+                avg (i, j, 0) += (*this) (i + r, j, 0);
+                avg (i, j, 0) += (*this) (i + r, j - r, 0);
+   
