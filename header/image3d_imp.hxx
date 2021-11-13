@@ -2819,4 +2819,20 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
             {
                 avg (i, j, 0) += (*this) (i + r, j, 0);
                 avg (i, j, 0) += (*this) (i + r, j - r, 0);
-   
+                avg (i, j, 0) += (*this) (i, j - r, 0);
+                avg (i, j, 0) += (*this) (i - r, j - r, 0);
+                avg (i, j, 0) += (*this) (i - r, j, 0);
+                avg (i, j, 0) += (*this) (i - r, j + r, 0);
+                avg (i, j, 0) += (*this) (i, j + r, 0);
+                avg (i, j, 0) += (*this) (i + r, j + r, 0);
+                avg (i, j, 0) /= 8;
+            }
+
+        // internal nodes
+        for (int i = r; i < X; ++i)
+            for (int j = r; j < Y; ++j)
+            {
+                mask[0] = (*this) (i + r, j, 0) > (*this) (i, j, 0) + c;
+                mask[1] = (*this) (i + r, j - r, 0) > (*this) (i, j, 0) + c;
+                mask[2] = (*this) (i, j - r, 0) > (*this) (i, j, 0) + c;
+                mask[3] = (*this) (i - r, j - r, 0) > (*this) (i, j, 0) + c
