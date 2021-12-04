@@ -2896,3 +2896,17 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
                 {
                     f (i, j, 0) = static_cast<T> (1);
                 }
+
+                // 3nd STEP: compute gradient as standard deviation * f
+                std (i, j, 0) +=
+                    ( (*this) (i + r, j, 0) - avg (i, j, 0) ) * ( (*this) (i + r, j, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                    ( (*this) (i + r, j - r, 0) - avg (i, j, 0) ) * ( (*this) (i + r, j - r, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                    ( (*this) (i, j - r, 0) - avg (i, j, 0) ) * ( (*this) (i, j - r, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                    ( (*this) (i - r, j - r, 0) - avg (i, j, 0) ) * ( (*this) (i - r, j - r, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                    ( (*this) (i - r, j, 0) - avg (i, j, 0) ) * ( (*this) (i - r, j, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                
