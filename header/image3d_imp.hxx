@@ -2883,4 +2883,16 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
                                                 static_cast<int> (mask[3]) * 8 +
                                                 static_cast<int> (mask[4]) * 16 +
                                                 static_cast<int> (mask[5]) * 32 +
-   
+                                                static_cast<int> (mask[6]) * 64 +
+                                                static_cast<int> (mask[7]) * 128 );
+
+                // 2nd STEP: compute auxiliar binary image to noise suppression (compute f)
+                if ( aux == 2 && res (i, j, 0) != 1 && res (i, j, 0) != 2 && res (i, j, 0) != 4 &&
+                        res (i, j, 0) != 8 && res (i, j, 0) != 16 && res (i, j, 0) != 32 &&
+                        res (i, j, 0) != 64 && res (i, j, 0) != 128 && res (i, j, 0) != 127 &&
+                        res (i, j, 0) != 191 && res (i, j, 0) != 223 && res (i, j, 0) != 239 &&
+                        res (i, j, 0) != 247 && res (i, j, 0) != 251 && res (i, j, 0) != 253 &&
+                        res (i, j, 0) != 254 )
+                {
+                    f (i, j, 0) = static_cast<T> (1);
+                }
