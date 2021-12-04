@@ -2861,4 +2861,26 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
                 if (mask[5] != mask[4])
                 {
                     ++aux;
-         
+                }
+                if (mask[6] != mask[5])
+                {
+                    ++aux;
+                }
+                if (mask[7] != mask[6])
+                {
+                    ++aux;
+                }
+                if (mask[7] != mask[0])
+                {
+                    ++aux;
+                }
+
+
+                // 1st STEP: LBP with a threshold (compute res)
+                res (i, j, 0) = static_cast<T> (static_cast<int> (mask[0]) * 1 +
+                                                static_cast<int> (mask[1]) * 2 +
+                                                static_cast<int> (mask[2]) * 4 +
+                                                static_cast<int> (mask[3]) * 8 +
+                                                static_cast<int> (mask[4]) * 16 +
+                                                static_cast<int> (mask[5]) * 32 +
+   
