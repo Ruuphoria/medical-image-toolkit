@@ -2835,4 +2835,30 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
                 mask[0] = (*this) (i + r, j, 0) > (*this) (i, j, 0) + c;
                 mask[1] = (*this) (i + r, j - r, 0) > (*this) (i, j, 0) + c;
                 mask[2] = (*this) (i, j - r, 0) > (*this) (i, j, 0) + c;
-                mask[3] = (*this) (i - r, j - r, 0) > (*this) (i, j, 0) + c
+                mask[3] = (*this) (i - r, j - r, 0) > (*this) (i, j, 0) + c;
+                mask[4] = (*this) (i - r, j, 0) > (*this) (i, j, 0) + c;
+                mask[5] = (*this) (i - r, j + r, 0) > (*this) (i, j, 0) + c;
+                mask[6] = (*this) (i, j + r, 0) > (*this) (i, j, 0) + c;
+                mask[7] = (*this) (i + r, j + r, 0) > (*this) (i, j, 0) + c;
+
+                aux = 0;
+                if (mask[1] != mask[0])
+                {
+                    ++aux;
+                }
+                if (mask[2] != mask[1])
+                {
+                    ++aux;
+                }
+                if (mask[3] != mask[2])
+                {
+                    ++aux;
+                }
+                if (mask[4] != mask[3])
+                {
+                    ++aux;
+                }
+                if (mask[5] != mask[4])
+                {
+                    ++aux;
+         
