@@ -2928,4 +2928,17 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
         std.connected_component (res, avg, t1, true);
 
         std::cout << std::endl << "\tPixels survived to LBP class selection: ";
-        std::cout << 100 * f.norm1() / (this-
+        std::cout << 100 * f.norm1() / (this->dimx * this->dimy) << " %" << std::endl;
+        std::cout << "\tPixels survived to t2 threshold: ";
+        std::cout << 100 * avg.norm1() / (this->dimx * this->dimy) << " %" << std::endl;
+        std::cout << "\tPixels survived at the end: ";
+        std::cout << 100 * res.norm1() / (this->dimx * this->dimy) << " %" << std::endl << std::endl;
+
+    }// end 2d case
+
+    return;
+}
+
+#endif // IMAGE3D_IMP_HPP_INCLUDED
+
+
