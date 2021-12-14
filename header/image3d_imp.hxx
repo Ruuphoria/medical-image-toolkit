@@ -2909,4 +2909,23 @@ void im3d::image3d<T>::local_binary_pattern_edge_detector
                 std (i, j, 0) +=
                     ( (*this) (i - r, j, 0) - avg (i, j, 0) ) * ( (*this) (i - r, j, 0) - avg (i, j, 0) );
                 std (i, j, 0) +=
-                
+                    ( (*this) (i - r, j + r, 0) - avg (i, j, 0) ) * ( (*this) (i - r, j + r, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                    ( (*this) (i, j + r, 0) - avg (i, j, 0) ) * ( (*this) (i, j + r, 0) - avg (i, j, 0) );
+                std (i, j, 0) +=
+                    ( (*this) (i + r, j + r, 0) - avg (i, j, 0) ) * ( (*this) (i + r, j + r, 0) - avg (i, j, 0) );
+                std (i, j, 0) /= 8;
+                std (i, j, 0) = sqrt ( std (i, j, 0) );
+
+                std (i, j, 0) *= f (i, j, 0);
+            }
+
+        // 4nd STEP: edge-detection with two threshold
+        std.im_to_black_and_white (avg, t2);
+
+        res = 0;
+
+        std.connected_component (res, avg, t1, true);
+
+        std::cout << std::endl << "\tPixels survived to LBP class selection: ";
+        std::cout << 100 * f.norm1() / (this-
