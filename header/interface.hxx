@@ -48,4 +48,25 @@ Read details of the license in the file license.txt provided with the library.
 
 
 /*!
- * \brief A namespace in which all objects link
+ * \brief A namespace in which all objects linked to
+ * an image 3d are defined.
+ */
+namespace im3d
+{
+
+// STATIC VARIABLES
+static vtkSmartPointer<vtkRenderer> RENDERER = NULL;
+static vtkSmartPointer<vtkRenderWindowInteractor> RENWININT = NULL;
+
+/*!
+ * \brief A class inheriting from \ref abstractinterface conceived as a linker
+ * between an \ref image3d and an \ref imageptr of type vtkSmartPointer<vtkImageData>.
+ *
+ * This class follows the guideline of \ref abstractinterface providing the user with
+ * an interface class specialized in communication between an \ref image3d and
+ * elements from the vtk library.
+ * The vtk library is an open source project for 3D computer graphics, see www.vtk.org
+ * for more details.
+ * The use of this library makes the visualization process easy and aesthetically
+ * satisfying, with planes the allow to explore the image as well as the possibility
+ * to freely rotate it in the 3-dimensional spa
