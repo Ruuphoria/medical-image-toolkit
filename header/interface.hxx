@@ -137,4 +137,37 @@ public:
      \param green the Green value.
      \param blue the Blue value.
      */
-    void setcolour (double cons
+    void setcolour (double const& red = 1., double const& green = 1., double const& blue = 0.)
+    {
+        colour[0] = red;
+        colour[1] = green;
+        colour[2] = blue;
+        return;
+    };
+
+    /*!
+     \brief member to set opacity
+
+     \param opacity should be a value between 0 and 1.
+     */
+    inline void setopacity (double const& opacity = 0.5)
+    {
+        this->opacity = opacity;
+        return;
+    };
+
+    /*!
+     \brief member to show only a level of a T \ref imageptr.
+
+     This member will produce an image where only the pixels with a value equal to
+     level are highlighted. An extensive use of the vtk library is made, concerning
+     in particular rendering and/or shading operations.
+
+     \param level the value of the level to be shown.
+     */
+    void show_contour (double const& level = 0);
+
+    /*!
+     \brief Member to show an image using three orthogonal planes.
+
+   
