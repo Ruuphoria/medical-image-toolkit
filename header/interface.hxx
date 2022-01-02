@@ -99,4 +99,42 @@ public:
      Will construct the class automatically calling the load function with the desired
      filename.
 
-     \param imagename a string containing the path to the image to be proces
+     \param imagename a string containing the path to the image to be processed,
+     including the file's extension.
+     Supported extensions are .mhd, .dcm, .jpg and .bmp.
+     */
+    interface (std::string const& imagename);
+
+    /*!
+     \brief copy constructor
+     */
+    interface (image3d<S> const& myim);
+
+    /*!
+     \brief default destructor
+     */
+    virtual ~interface () {};
+
+    // CONVERSION
+
+    /*!
+     \brief function to convert an image3d into a T image
+     */
+    void convertfromimage3d (image3d<S> const& myim);
+
+    /*!
+     \brief function to convert T image into an image3d
+     */
+    void convert2image3d (image3d<S>& myim) const;
+
+    // SHOWING
+
+    /*!
+     \brief member to set background color.
+
+     the color is specified in RGB values.
+     \param red the Red value.
+     \param green the Green value.
+     \param blue the Blue value.
+     */
+    void setcolour (double cons
