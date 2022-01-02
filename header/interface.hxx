@@ -69,4 +69,34 @@ static vtkSmartPointer<vtkRenderWindowInteractor> RENWININT = NULL;
  * for more details.
  * The use of this library makes the visualization process easy and aesthetically
  * satisfying, with planes the allow to explore the image as well as the possibility
- * to freely rotate it in the 3-dimensional spa
+ * to freely rotate it in the 3-dimensional space.
+ * To make the program work without vtk libraries the user has to implement another
+ * child class using an alternative way to implement abstract members.
+ */
+template <typename S>
+class interface : public abstractinterface < vtkSmartPointer<vtkImageData>, S >
+{
+
+protected:
+
+    //! member to define the background color of the visualization.
+    double colour[3];
+    //! member to define the opacity of the image during visualization.
+    double opacity;
+
+public:
+
+    // CONSTRUCTORS
+
+    /*!
+     \brief default constructor
+     */
+    interface ();
+
+    /*!
+     \brief constructor from an image name.
+
+     Will construct the class automatically calling the load function with the desired
+     filename.
+
+     \param imagename a string containing the path to the image to be proces
