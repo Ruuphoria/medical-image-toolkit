@@ -170,4 +170,22 @@ public:
     /*!
      \brief Member to show an image using three orthogonal planes.
 
-   
+     This member will show the image in a box made of three movable planes.
+     These planes may be directed using the mouse, by pressing both buttons at the
+     same time and moving it. An extensive use of the vtk library is made, concerning
+     in particular rendering and/or shading operations and the addition of planes.
+     */
+    void show_image ();
+
+    /*!
+     \brief Member to show an image using three orthogonal planes and a selected level.
+
+     This function is a combination of \ref show_contour
+     and \ref show_image. An extensive use of the vtk library is made, concerning
+     in particular rendering and/or shading operations and the addition of planes.
+     \param level the value of the level to be shown.
+     */
+    void show_image_and_contour (double const& level = 0);
+
+    /*!
+     \brief
