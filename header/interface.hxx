@@ -208,4 +208,22 @@ public:
      \brief Member to get coordinates of a pixel.
 
      This function helps user to find coordinates of a pixel showing an image using
-  
+     \ref show_image and asking user for coordinates.
+     It returns real coordinates considering spacing between pixels. The coordinates
+     returned are the same that user visualizes during execution of the member.
+
+     \param x is the pixel index of the first dimension coordinate.
+     \param y is the pixel index of the second dimension coordinate.
+     \param z is the pixel index of the third dimension coordinate.
+     */
+    void get_coordinates (double& x, double& y, double& z);
+
+    /*!
+     \brief Member to get coordinates of a pixel.
+
+     This function helps user to find coordinates of a pixel showing an image using
+     \ref show_image and asking user for coordinates.
+     It returns coordinates in pixel (integer coordinates).
+
+     \param i is the pixel index of the first dimension coordinate.
+     \param 
