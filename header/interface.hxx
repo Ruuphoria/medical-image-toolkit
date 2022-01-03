@@ -226,4 +226,21 @@ public:
      It returns coordinates in pixel (integer coordinates).
 
      \param i is the pixel index of the first dimension coordinate.
-     \param 
+     \param j is the pixel index of the second dimension coordinate.
+     \param k is the pixel index of the third dimension coordinate.
+     */
+    void get_coordinates (uint& i, uint& j, uint& k);
+
+    /*!
+     \brief Member to get coordinates of a pair of pixels.
+
+     This function helps user to find coordinates of a pair of pixels showing an image
+     using \ref show_image and asking user for coordinates.
+     It returns real coordinates considering spacing between pixels. The coordinates
+     returned are the same that user visualizes during execution of the member.
+
+     \param x1 is the first pixel index of the first dimension coordinate.
+     \param y1 is the first pixel index of the second dimension coordinate.
+     \param z1 is the first pixel index of the third dimension coordinate.
+     \param x2 is the second pixel index of the first dimension coordinate.
+     \param y2 is the second pixel i
