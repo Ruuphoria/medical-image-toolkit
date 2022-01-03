@@ -188,4 +188,24 @@ public:
     void show_image_and_contour (double const& level = 0);
 
     /*!
-     \brief
+     \brief Member to show a contour of an image with another one as background.
+
+     This function is just like \ref show_image_and_contour except that the image from
+     which the level is extracted and the background image need not coincide.
+     An extensive use of the vtk library is made, concerning in particular rendering
+     and/or shading operations and the addition of planes.
+
+     \param level the value of the level to be shown.
+     \param backgroundimage a reference to an interface class linked to the background
+     image.
+     */
+    void show_contour_with_background_image (interface& backgroundimage,
+                                             double const& level = 0);
+
+    // COORDINATES
+
+    /*!
+     \brief Member to get coordinates of a pixel.
+
+     This function helps user to find coordinates of a pixel showing an image using
+  
