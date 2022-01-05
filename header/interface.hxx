@@ -285,4 +285,28 @@ public:
      \brief Member to add a contour to the renderer
      */
     void addcontour2renderer (vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
-                    
+                              double const& level = 0);
+
+    /*!
+     \brief Member to add a contour to the renderer
+     */
+    void addcontour2renderer (double const& level,
+                              vtkSmartPointer<vtkRenderer>& renderer = RENDERER);
+
+    /*!
+     \brief Member to add planes to the image view
+     */
+    void addplanes2renderwindowinteractor
+    (vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+     vtkSmartPointer<vtkRenderWindowInteractor>& renWinInt = RENWININT) const;
+
+    /*!
+     \brief Member to create a new rendering window
+     */
+    static void newrendering (vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+                              vtkSmartPointer<vtkRenderWindowInteractor>& renWinInt = RENWININT);
+
+    /*!
+     \brief Member to delete a rendering window
+     */
+    stati
