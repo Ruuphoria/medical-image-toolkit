@@ -309,4 +309,23 @@ public:
     /*!
      \brief Member to delete a rendering window
      */
-    stati
+    static void deleterendering ( vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+                                  vtkSmartPointer<vtkRenderWindowInteractor>& renWinInt = RENWININT);
+
+    /*!
+     \brief Member to reset a rendering window
+     */
+    static void reset (vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+                       vtkSmartPointer<vtkRenderWindowInteractor>& renWinInt = RENWININT);
+
+    /*!
+     \brief Member to initiate the rendering process
+
+     This member will actually begin showing the image.
+     */
+    static void startshowing (vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+                              vtkSmartPointer<vtkRenderWindowInteractor>& renWinInt = RENWININT,
+                              int const& windowwidth = 800, int const& windowheight = 480);
+
+    /*!
+     \brief Member to 
