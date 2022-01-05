@@ -260,4 +260,29 @@ public:
      \param j1 is the first pixel index of the second dimension coordinate.
      \param k1 is the first pixel index of the third dimension coordinate.
      \param i2 is the second pixel index of the first dimension coordinate.
-     \param j2 is the second pixel index of th
+     \param j2 is the second pixel index of the second dimension coordinate.
+     \param k2 is the second pixel index of the third dimension coordinate.
+     */
+    void get_coordinates (uint& i1, uint& j1, uint& k1,
+                          uint& i2, uint& j2, uint& k2);
+
+    // WRITING
+
+    /*!
+     \brief function to write a T image in <imagename>.<extension>
+
+     This function will write a file containing all the information relative to the
+     image linked to the class.
+     \param imagename the name of the file.
+     \param extension the extension of the file.
+     */
+    void write (std::string const& imagename = "image3d",
+                std::string const& extension = ".mhd") const;
+
+    // SUPPORT FUNCTIONS FOR VTK USAGE
+
+    /*!
+     \brief Member to add a contour to the renderer
+     */
+    void addcontour2renderer (vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+                    
