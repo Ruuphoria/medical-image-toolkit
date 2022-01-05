@@ -243,4 +243,21 @@ public:
      \param y1 is the first pixel index of the second dimension coordinate.
      \param z1 is the first pixel index of the third dimension coordinate.
      \param x2 is the second pixel index of the first dimension coordinate.
-     \param y2 is the second pixel i
+     \param y2 is the second pixel index of the second dimension coordinate.
+     \param z2 is the second pixel index of the third dimension coordinate.
+     */
+    void get_coordinates (double& x1, double& y1, double& z1,
+                          double& x2, double& y2, double& z2);
+
+    /*!
+     \brief Member to get coordinates of a pair of pixels.
+
+     This function helps user to find coordinates of a pair of pixels showing an image
+     using \ref show_image and asking user for coordinates.
+     It returns coordinates in pixel (integer coordinates).
+
+     \param i1 is the first pixel index of the first dimension coordinate.
+     \param j1 is the first pixel index of the second dimension coordinate.
+     \param k1 is the first pixel index of the third dimension coordinate.
+     \param i2 is the second pixel index of the first dimension coordinate.
+     \param j2 is the second pixel index of th
