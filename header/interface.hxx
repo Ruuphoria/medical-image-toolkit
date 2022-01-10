@@ -328,4 +328,21 @@ public:
                               int const& windowwidth = 800, int const& windowheight = 480);
 
     /*!
-     \brief Member to 
+     \brief Member to initiate the rendering process
+
+     This member will actually begin showing the image.
+     */
+    static void startshowing (int const& windowwidth, int const& windowheight,
+                              vtkSmartPointer<vtkRenderer>& renderer = RENDERER,
+                              vtkSmartPointer<vtkRenderWindowInteractor>& renWinInt = RENWININT);
+
+
+};//end of class interface
+
+
+}//end namespace im3d
+
+#include "interface_imp.hxx"
+
+
+#endif // INTERFACE_HXX_INCLUDED
