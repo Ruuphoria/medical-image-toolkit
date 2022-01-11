@@ -58,4 +58,26 @@ class unsteady_poisson_functor
 private:
     //! Private member storing a function pointer
     void (*f) (im3d::image3d<T>& res, im3d::image3d<T> const& b, T const& dt, T const& bc,
-               im3d::i
+               im3d::image3d<T> const& input);
+
+public:
+
+    /*!
+     \brief Constructor taking a function pointer to assign to the private function
+     pointer
+     */
+    unsteady_poisson_functor (void (*f) (im3d::image3d<T>& res, im3d::image3d<T> const& b,
+                                         T const& dt, T const& bc,
+                                         im3d::image3d<T> const& input) ) : f (f) {};
+
+    /*!
+     \brief This operator makes class \ref unsteady_poisson_functor a functor.
+
+     Operator() calls the private function f with the same arguments
+
+     \param res is the first argument of the private function where result is written.
+     \param b is the second argument of the private function and is the known term of
+     the equation.
+     \param dt is the third argument of the private function and is the time spacing
+     between two steps.
+     \param bc i
