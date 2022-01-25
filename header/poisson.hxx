@@ -99,4 +99,29 @@ public:
      passed as argument.
 
      \param f is a void returning function pointer taking three parameters:
-     \ref im3d::image3d res, \ref im3d::image3d b and
+     \ref im3d::image3d res, \ref im3d::image3d b and dt.
+     */
+    void changef (void (*f) (im3d::image3d<T>& res, im3d::image3d<T> const& b,
+                             T const& dt, T const& bc, im3d::image3d<T> const& input) )
+    {
+        this->f = f;
+        return;
+    };
+
+};//end functor
+
+
+
+// FUNCTION TO SOLVE LINEAR SYSTEM
+
+/*!
+ \brief This function solve one step of the discretized Poisson equation with
+ Dirichlet boundary condition using Gauss-Seidel method.
+
+ The discretization of the Poisson operator using finite difference leads us to
+ the linear system: A*res=b. A is the finite difference discretization matrix.
+ Gauss-Seidel is a semi-implicit method in which the terms of the Poisson operator
+ that have been computed yet are treated in explicit way.
+
+ \param res is the result of the linear system after one step on the Gauss-Seidel
+ method and also the in
