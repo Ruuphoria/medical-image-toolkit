@@ -80,4 +80,23 @@ public:
      the equation.
      \param dt is the third argument of the private function and is the time spacing
      between two steps.
-     \param bc i
+     \param bc is the fourth argument of the private function and is the value of the
+     boundary condition
+     \param input is the input image to be update. Default is an empty image because
+     if you use an 'in-place' method to solve linear system (like
+     \ref NeuGaussSeidel) you would prefer to save input image directly in parameter
+     res to limit memory usage.
+     */
+    void operator () (im3d::image3d<T>& res, im3d::image3d<T> const& b,
+                      T const& dt = 1., T const& bc = 0.,
+                      im3d::image3d<T> const& input = im3d::image3d<T>() )
+    {
+        this->f (res, b, dt, bc, input);
+        return;
+    };
+    /*!
+     \brief This function reassign the private function pointer with the new one
+     passed as argument.
+
+     \param f is a void returning function pointer taking three parameters:
+     \ref im3d::image3d res, \ref im3d::image3d b and
