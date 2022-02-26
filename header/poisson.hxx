@@ -124,4 +124,20 @@ public:
  that have been computed yet are treated in explicit way.
 
  \param res is the result of the linear system after one step on the Gauss-Seidel
- method and also the in
+ method and also the input image at the beginning of the function.
+ \param b is the forcing term of the equation.
+ \param dt is the time spacing between two steps.
+ \param bc is the value imposed at the boundary nodes
+ \param input is useless in this case and its existence is due to the compability
+ with functor \ref unsteady_poisson_functor. The input images is stored in parameter
+ res because Gauss-Seidel method has been implemented as an 'in-place' method.
+ Use it with the default empty image.
+
+
+ \warning This function does not check whether the dimensions of the result and the
+ forcing term agree and does not resize the result to the desired dimensions.\n
+ This is an implementative choice which consider two fact:
+
+ - because this function solve one step of Gauss Seidel, but could be
+ used in a loop to reach the solution at equilibrium, in this case introducing
+ an if statement there wo
