@@ -174,4 +174,20 @@ void DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
  Use it with the default empty image.
 
  \warning
- This 
+ This function does not check whether the dimensions of the result and the forcing
+ term agree and does not resize the result to the desired dimensions.\n
+ This is an implementative choice which consider two fact:
+
+ - because this function solve one step of Gauss Seidel, but could be
+ used in a loop to reach the solution at equilibrium, in this case introducing
+ an if statement there would be a loss of performances;
+ - we implemented the Gauss Seidel algorithm so as the result is written on the
+ same variables on which
+ is stored the result of the previous step, resizing the result will affect
+ the previous step values. \n
+.
+ If you are unsure about the dimensions of the result check it before entering a loop,
+ and resize the result properly before starting Gauss Seidel algorithm.
+ */
+template <typename T>
+void NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const
