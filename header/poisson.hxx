@@ -140,4 +140,22 @@ public:
 
  - because this function solve one step of Gauss Seidel, but could be
  used in a loop to reach the solution at equilibrium, in this case introducing
- an if statement there wo
+ an if statement there would be a loss of performances;
+ - we implemented the Gauss Seidel algorithm so as the result is written on the
+ same variables on which
+ is stored the result of the previous step, resizing the result will affect
+ the previous step values. \n
+.
+ If you are unsure about the dimensions of the result check it before entering a loop,
+ and resize the result properly before starting Gauss Seidel algorithm.
+ */
+template <typename T>
+void DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
+                     T const& dt = 1., T const& bc = 0.,
+                     im3d::image3d<T> const& input =  im3d::image3d<T>() );
+
+/*!
+ \brief This function solves one step of the discretized Poisson equation with Neumann
+ boundary condition using Gauss-Seidel method.
+
+ The discretization of the Poisson operator using finite difference leads us
