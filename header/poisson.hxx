@@ -190,4 +190,13 @@ void DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
  and resize the result properly before starting Gauss Seidel algorithm.
  */
 template <typename T>
-void NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const
+void NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
+                     T const& dt = 1., T const& bc = 0.,
+                     im3d::image3d<T> const& input = im3d::image3d<T>() );
+
+
+}// end namespace lapl
+
+#include "poisson_imp.hxx"
+
+#endif // POISSON_HXX_INCLUDED
