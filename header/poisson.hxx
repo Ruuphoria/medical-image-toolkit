@@ -158,4 +158,20 @@ void DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
  \brief This function solves one step of the discretized Poisson equation with Neumann
  boundary condition using Gauss-Seidel method.
 
- The discretization of the Poisson operator using finite difference leads us
+ The discretization of the Poisson operator using finite difference leads us to the
+ linear system: A*res=b. A is the finite difference discretization matrix.
+ Gauss-Seidel is a semi-implicit method in which the terms of the Poisson operator
+ that have been already computed are treated in explicit way.
+
+ \param res is the result of the linear system after one step on the Gauss-Seidel
+ method and also the input image at the beginning of the function.
+ \param b is the forcing term of the equation.
+ \param dt is the time spacing between two steps.
+ \param bc is the value of the boundary condition \f$ \partial_\nu res = bc \f$
+ \param input is useless in this case and its existence is due to the compability
+ with functor \ref unsteady_poisson_functor. The input images is stored in parameter
+ res because Gauss-Seidel method has been implemented as an 'in-place' method.
+ Use it with the default empty image.
+
+ \warning
+ This 
