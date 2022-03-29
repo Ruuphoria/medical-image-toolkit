@@ -57,4 +57,21 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         // the central pixel will be treated as current step values because at current
         // step we have already computed them the pixels with indexes greater than the
         // indexes of the central pixel will be treated as previous step values because
-        // we have not computed t
+        // we have not computed them yet we start calculating the result from the pixel
+        // (0,0,0)
+
+        // corner i=0, j=0
+        res (0, 0, 0) = ( ( res (1, 0, 0) - nxy * bc * hx ) / (hx * hx) +
+                          ( res (0, 1, 0) - nxy * bc * hy ) / (hy * hy) +
+                          b (0, 0, 0) + res (0, 0, 0) / dt ) * htildeij;
+
+        // edge j=0 , i>0
+        for (uint i = 1; i < X - 2; ++i)
+            res (i, 0, 0) = ( (res (i + 1, 0, 0) + res (i - 1, 0, 0) ) / (hx * hx) +
+                              (res (i, 1, 0) - bc * hy ) / (hy * hy) +
+                              b (i, 0, 0) + res (i, 0, 0) / dt  ) * htildej;
+
+        // corner i=X-1 j=0
+        res (X - 1, 0, 0) = ( ( res (X - 2, 0, 0) + nxy * bc * hx ) / (hx * hx) +
+                              ( res (X - 1, 1, 0) - nxy * bc * hy ) / (hy * hy) +
+    
