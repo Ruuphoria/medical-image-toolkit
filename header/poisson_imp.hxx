@@ -45,3 +45,16 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         htildeij = 1. / htildeij;
 
         // COMPUTE THE OBLIQUE NORMAL COMPONENTS
+        T nxy (1.);
+        nxy /= sqrt (2.);
+
+        // the computation must be done in the correct order, in res there is the previous
+        // step result Gauss-Seidel method is semi-implicit, it uses both current step
+        // value and previous step values we read the previous step value in a pixel,
+        // we compute the new value and write it in the same pixel the computation
+        // involves pixels near to the one on which we write the result
+        // (the central pixel) so the pixels with indexes smaller than the indexes of
+        // the central pixel will be treated as current step values because at current
+        // step we have already computed them the pixels with indexes greater than the
+        // indexes of the central pixel will be treated as previous step values because
+        // we have not computed t
