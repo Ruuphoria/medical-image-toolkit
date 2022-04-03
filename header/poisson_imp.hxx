@@ -92,4 +92,21 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
 
             // edge i=max, j>0
             res (X - 1, j, 0) =
-                ( ( res (X - 2, j, 0) + bc * hx ) / (hx * hx) + ( res (X - 1, j + 1, 0) 
+                ( ( res (X - 2, j, 0) + bc * hx ) / (hx * hx) + ( res (X - 1, j + 1, 0) + res (X - 1, j - 1, 0) ) /
+                  (hy * hy) + b (X - 1, j, 0) + res (X - 1, j, 0) / dt ) * htildei;
+        }
+        // corner i=0, j=Y-1
+        res (0, Y - 1, 0) =
+            ( ( res (1, Y - 1, 0) - nxy * bc * hx ) / (hx * hx) + ( res (0, Y - 2, 0) + nxy * bc * hy ) /
+              (hy * hy) + b (0, Y - 1, 0) + res (0, Y - 1, 0) / dt ) * htildeij;
+
+        //edge i>0, j=Y-1
+        for (uint i = 1; i < X - 2; ++i)
+            res (i, Y - 1, 0) =
+                ( (res (i + 1, Y - 1, 0) + res (i - 1, Y - 1, 0) ) * (hx * hx) + ( res (i, Y - 2, 0) + bc * hy ) /
+                  (hy * hy) + b (i, Y - 1, 0) + res (i, Y - 1, 0) / dt ) * htildej;
+
+        // corner i=X-1, j=Y-1
+        res (X - 1, Y - 1, 0) =
+            ( ( res (X - 2, Y - 1, 0) + nxy * bc * hx ) / (hx * hx) + ( res (X - 1, Y - 2, 0) + nxy * bc * hy ) /
+      
