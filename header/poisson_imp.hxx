@@ -132,4 +132,17 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         double htildeik = 1. / dt + 1. / (hx * hx) + 2. / (hy * hy) + 1. / (hz * hz);
         htildeik = 1. / htildeik;
 
-        double htildeij = 1. / dt +
+        double htildeij = 1. / dt + 1. / (hx * hx) + 1. / (hy * hy) + 2. / (hz * hz);
+        htildeij = 1. / htildeij;
+
+        double htildeijk = 1. / dt + 1. / (hx * hx) + 1. / (hy * hy) + 1. / (hz * hz);
+        htildeijk = 1. / htildeijk;
+
+        // the computation must be done in the correct order, in res there is the previous
+        // step result Gauss-Seidel method is semi-implicit, it uses both curent step
+        // value and previous step values we read the previous step value in a pixel,
+        // we compute the new value and write it in the same pixel the computation
+        // involves pixels near to the one on which we write the result
+        // (the central pixel) so the pixels with indexes smaller than the indexes of the
+        // central pixel will be treated as current step values because at current step we
+        // have already computed them the pixels with indexes greater
