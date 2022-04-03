@@ -109,4 +109,27 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         // corner i=X-1, j=Y-1
         res (X - 1, Y - 1, 0) =
             ( ( res (X - 2, Y - 1, 0) + nxy * bc * hx ) / (hx * hx) + ( res (X - 1, Y - 2, 0) + nxy * bc * hy ) /
-      
+              (hy * hy) + b (X - 1, Y - 1, 0) + res (X - 1, Y - 1, 0) / dt ) * htildeij;
+
+    }
+    else
+    {
+        double htilde = 1. / dt + 2. / (hx * hx) + 2. / (hy * hy) + 2. / (hz * hz);
+        htilde = 1. / htilde;
+
+        double htildei = 1. / dt + 1. / (hx * hx) + 2. / (hy * hy) + 2. / (hz * hz);
+        htildei = 1. / htildei;
+
+        double htildej = 1. / dt + 2. / (hx * hx) + 1. / (hy * hy) + 2. / (hz * hz);
+        htildej = 1. / htildej;
+
+        double htildek = 1. / dt + 2. / (hx * hx) + 2. / (hy * hy) + 1. / (hz * hz);
+        htildek = 1. / htildek;
+
+        double htildejk = 1. / dt + 2. / (hx * hx) + 1. / (hy * hy) + 1. / (hz * hz);
+        htildejk = 1. / htildejk;
+
+        double htildeik = 1. / dt + 1. / (hx * hx) + 2. / (hy * hy) + 1. / (hz * hz);
+        htildeik = 1. / htildeik;
+
+        double htildeij = 1. / dt +
