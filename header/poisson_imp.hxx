@@ -145,4 +145,23 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         // involves pixels near to the one on which we write the result
         // (the central pixel) so the pixels with indexes smaller than the indexes of the
         // central pixel will be treated as current step values because at current step we
-        // have already computed them the pixels with indexes greater
+        // have already computed them the pixels with indexes greater than the indexes of
+        // the central pixel will be treated as previous step values because we have not
+        // computed them yet
+
+        // OBLIQUE NORMAL COMPUTATION
+        // edge  [(1,1,0) (1,0,1) (0,1,1)]*(1/sqrt(2))
+        // angle (1,1,1)*(1/sqrt(3))
+        T n_edge (1.), n_angle (1.);
+        n_edge /= sqrt (2.);
+        n_angle /= sqrt (3.);
+
+        // COMPUTE FACE k=0
+        // corner i=0, j=0, k=0
+        res (0, 0, 0) = ( (res (1, 0, 0) - n_angle * bc * hx) / (hx * hx) +
+                          (res (0, 1, 0) - n_angle * bc * hy) / (hy * hy) +
+                          (res (0, 0, 1) - n_angle * bc * hz) / (hz * hz) +
+                          b (0, 0, 0) + res (0, 0, 0) / dt ) * htildeijk;
+        // edge i>0, j=0, k=0
+        for (uint i = 1; i < X - 1; ++i)
+            res (i, 0, 0) =  ( (res (i + 
