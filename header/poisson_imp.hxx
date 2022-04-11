@@ -202,4 +202,18 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         // edge i>0, j=Y-1, k=0
         for (uint i = 1; i < X - 1; ++i)
             res (i, Y - 1, 0) = ( ( res (i + 1, Y - 1, 0) + res (i - 1, Y - 1, 0) ) / (hx * hx) +
-                                  ( res (i, Y - 2, 0)
+                                  ( res (i, Y - 2, 0) + n_edge * bc * hy) / (hy * hy) +
+                                  ( res (i, Y - 1, 1) - n_edge * bc * hz) / (hz * hz) +
+                                  b (i, Y - 1, 0) + res (i, Y - 1, 0) / dt ) * htildejk;
+        // corner i=X-1, j=Y-1, k=0
+        res (X - 1, Y - 1, 0) = ( (res (X - 2, Y - 1, 0) + n_angle * bc * hx) / (hx * hx) +
+                                  (res (X - 1, Y - 2, 0) + n_angle * bc * hy) / (hy * hy) +
+                                  (res (X - 1, Y - 1, 1) - n_angle * bc * hz) / (hz * hz) +
+                                  b (X - 1, Y - 1, 0) + res (X - 1, Y - 1, 0) / dt ) * htildeijk;
+
+        // COMPUTE THE INTERNAL NODES OF THE CUBE k>0
+        for (uint k = 1; k < Z - 1; ++k)
+        {
+            // edge i=0, j=0, k>0
+            res (0, 0, k) = ( (res (1, 0, k) - n_edge * bc * hx) / (hx * hx) +
+                     
