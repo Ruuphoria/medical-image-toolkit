@@ -240,4 +240,16 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
                 // internal nodes i>0, j>0, k>0
                 for (uint i = 1; i < X - 1; ++i)
                 {
-                    res ( i, j, k) = ( ( res (i + 1, j, k) + res (i - 1, j, k) ) / (
+                    res ( i, j, k) = ( ( res (i + 1, j, k) + res (i - 1, j, k) ) / (hx * hx) +
+                                       ( res (i, j + 1, k) + res (i, j - 1, k) ) / (hy * hy) +
+                                       ( res (i, j, k + 1) + res (i, j, k - 1) ) / (hz * hz) +
+                                       b (i, j, k) + res (i, j, k) / dt ) * htilde;
+                }
+                // face i=dimx-1, j>0, k>0
+                res (X - 1, j, k) = ( (res (X - 2, j, k) + bc * hx) / (hx * hx) +
+                                      (res (X - 1, j + 1, k) + res (X - 1, j - 1, k) ) / (hy * hy) +
+                                      (res (X - 1, j, k + 1) + res (X - 1, j, k - 1) ) / (hz * hz) +
+                                      b (X - 1, j, k) + res (X - 1, j, k) / dt ) * htildei;
+            }
+            // edge i=0, j=Y-1, k>0
+            res (0, Y - 1, k) = ( (res (1, Y - 1, k) - n_edge * bc * hx)
