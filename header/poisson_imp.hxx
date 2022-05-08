@@ -288,4 +288,19 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         res (X - 1, 0, Z - 1) = ( (res (X - 2, 0, Z - 1) + n_angle * bc * hx) / (hx * hx) +
                                   (res (X - 1, 1, Z - 1) - n_angle * bc * hy) / (hy * hy) +
                                   (res (X - 1, 0, Z - 2) + n_angle * bc * hz) / (hz * hz) +
-                                  b (X - 1, 0, Z - 1) + res (X - 1, 0, Z - 1) / dt ) * htildeij
+                                  b (X - 1, 0, Z - 1) + res (X - 1, 0, Z - 1) / dt ) * htildeijk;
+
+        for (uint j = 1; j < Y - 1; ++j)
+        {
+            // edge i=0, j>0, k=Z-1
+            res (0, j, Z - 1) = ( (res (1, j, Z - 1) - n_edge * bc * hx) / (hx * hx) +
+                                  (res (0, j + 1, Z - 1) + res (0, j - 1, Z - 1) ) / (hy * hy) +
+                                  (res (0, j, Z - 2) + n_edge * bc * hz) / (hz * hz) +
+                                  b (0, j, Z - 1) + res (0, j, Z - 1) / dt ) * htildeik;
+
+
+            // INTERNAL NODES OF THE FACE k=Z-1
+            for (uint i = 1; i < X - 1; ++i)
+                res (i, j, Z - 1) = ( (res (i + 1, j, Z - 1) + res (i - 1, j, Z - 1) ) / (hx * hx) +
+                                      (res (i, j + 1, Z - 1) + res (i, j - 1, Z - 1) ) / (hy * hy) +
+                                      (res (i, j, Z - 2) + bc * hz) / (hz * hz) +
