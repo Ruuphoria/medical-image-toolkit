@@ -277,4 +277,15 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
                               (res (0, 0, Z - 2) + n_angle * bc * hz) / (hz * hz) +
                               b (0, 0, Z - 1) + res (0, 0, Z - 1) / dt ) * htildeijk;
 
-        
+        // edge i>0, j=0, k=Z-1
+        for (uint i = 1; i < X - 1; ++i)
+            res (i, 0, Z - 1) = ( (res (i + 1, 0, Z - 1) + res (i - 1, 0, Z - 1) ) / (hx * hx) +
+                                  (res (i, 1, Z - 1) - n_edge * bc * hy) / (hy * hy) +
+                                  (res (i, 0, Z - 2) + n_edge * bc * hz) / (hz * hz) +
+                                  b (i, 0, Z - 1) + res (i, 0, Z - 1) / dt ) * htildejk;
+
+        // corner i=X-1, j=0, k=Z-1
+        res (X - 1, 0, Z - 1) = ( (res (X - 2, 0, Z - 1) + n_angle * bc * hx) / (hx * hx) +
+                                  (res (X - 1, 1, Z - 1) - n_angle * bc * hy) / (hy * hy) +
+                                  (res (X - 1, 0, Z - 2) + n_angle * bc * hz) / (hz * hz) +
+                                  b (X - 1, 0, Z - 1) + res (X - 1, 0, Z - 1) / dt ) * htildeij
