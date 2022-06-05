@@ -328,4 +328,34 @@ void lapl::NeuGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
         // corner i=X-1, j=Y-1, k=Z-1
         res (X - 1, Y - 1, Z - 1) = ( (res (X - 2, Y - 1, Z - 1) + n_angle * bc * hx) / (hx * hx) +
                                       (res (X - 1, Y - 2, Z - 1) + n_angle * bc * hy) / (hy * hy) +
-                                      (res (X
+                                      (res (X - 1, Y - 1, Z - 2) + n_angle * bc * hz) / (hz * hz) +
+                                      b (X - 1, Y - 1, Z - 1) + res (X - 1, Y - 1, Z - 1) / dt ) * htildeijk;
+
+    }
+    return;
+}
+
+
+
+template <typename T>
+void lapl::DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
+                           T const& dt, T const& bc, im3d::image3d<T> const& input)
+{
+    uint const X = res.getdimx(), Y = res.getdimy(), Z = res.getdimz();
+    double const hx = res.gethx(), hy = res.gethy(), hz = res.gethz();
+
+
+    // BC ASSIGNEMENT
+
+    // 2D case
+    if (Z == 1)
+    {
+        // edges j=0, k=0 and j=Y-1, k=0
+        for (uint i = 0; i < X; ++i)
+        {
+            res (i, 0, 0) = res (i, Y - 1, 0) = bc;
+        }
+
+        // edges i=0, k=0 and i=X-1, k=0
+        for (uint j = 0; j < Y; ++j)
+ 
