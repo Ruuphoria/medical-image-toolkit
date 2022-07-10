@@ -531,3 +531,371 @@ private:
     int fx; //!< index of initial contour set by \ref initialize_contour_as_cube
     int fy; //!< index of initial contour set by \ref initialize_contour_as_cube
     int fz; //!< index of initial contour set by \ref initialize_contour_as_cube
+    uint dimx; //!< dimension in X direction of current analyzed image
+    uint dimy; //!< dimension in Y direction of current analyzed image
+    uint dimz; //!< dimension in Z direction of current analyzed image
+    uint space_dim; //!< equal to 3 for 3D image, 2 for 2D image
+    double hx; //!< spacing in X direction of current analyzed image
+    double hy; //!< spacing in Y direction of current analyzed image
+    double hz; //!< spacing in Z direction of current analyzed image
+    /*!
+     * \brief auxiliary variable to reinitialize variables after a connected
+     * component extraction
+     */
+    bool init_variables;
+
+    ///@}
+
+    // PRIVATE MEMBERS USED BY APPLY
+
+    /*!
+     \brief private member used by \ref apply to update domain of the two regions at
+     each iteration
+     */
+    void set_heaviside (im3d::image3d<T>& Heps) const;
+
+    /*!
+     \brief private member used by \ref apply to initialize \ref segmentation::phi
+     with a cube
+     */
+    void initialize_phi_with_cube ();
+
+    /*!
+     \brief private member used by \ref apply to initialize \ref segmentation::phi
+     with an \ref im3d::image3d chosen by user
+     */
+    void initialize_phi_with_init (im3d::image3d<T> const& init);
+
+    /*!
+     \brief private member used by \ref apply to set the \ref edge_detector function
+     used by \ref shrink
+     */
+    void edge_detect (im3d::image3d<T>& res, im3d::image3d<T> const& f ) const;
+
+    /*!
+     \brief private member used by \ref apply to select after solving linear system
+     only those values of levelset in the allowed range [\ref a0, \ref b0]
+     */
+    void cut_phi();
+
+    /*!
+     \brief private member used by \ref apply to apply shrink operator
+     */
+    void shrink (std::vector<im3d::image3d<T> >& res,
+                 std::vector<im3d::image3d<T> > const& f1, im3d::image3d<T> const& f2) const;
+
+    /*!
+     \brief private member used by \ref apply to show partial result using private
+     attribute \ref segmentation::levelset and \ref segmentation::image
+     */
+    void internal_show ();
+
+    /*!
+     \brief private member used by \ref apply to extract a connected component of
+     \ref segmentation::phi at some iteration
+     */
+    void extract_connected_component ();
+
+    /*!
+     \brief private member used by \ref apply to update on the go those private
+     attributes settable via GetPot using \ref update_param_onthego
+     */
+    void update_param_onthego ();
+
+    /*!
+     \brief private member used by \ref apply to set parameters from \ref getpotfile
+     */
+    void set_param_from_getpot (std::string const& section);
+
+
+public:
+
+    // CONSTRUCTOR
+    /*!
+     \brief constructor to set all private attributes to their default values
+     */
+    rsfe_splitbregman();
+
+
+
+    // MEMBERS TO SET PRIVATE PARAMETERS
+
+    // NOT CHANGABLE WITH GETPOTFILE
+
+    /*!
+     * \name Private Parameters
+     * \brief Members to set some private attributes not changable via GetPot
+     */
+    ///@{
+    /*!
+     \brief to set private attribute \ref getpotfile
+     \param name is the desired filename of GetPot file
+     */
+    inline void set_getpotfile (std::string const& name);
+
+    /*!
+     \brief to set private attribute \ref onthego
+     \param onthego is the desired value
+     */
+    inline void set_onthego (bool const onthego);
+
+    /*!
+     \brief to set private attribute \ref verbosity
+     \param v is the desired value
+     */
+    inline void set_verbosity (bool const v);
+
+    /*!
+     \brief to set private attribute \ref logfilename
+     \param name is the desired filename of GetPot file
+     */
+    inline void set_logfilename (std::string const& name);
+
+    /*!
+     \brief to set private attribute \ref cv
+     \param cv is the desired function to assign at the private functor
+     */
+    inline void set_cv (conv::filtering<T> const cv);
+
+    /*!
+     \brief to set private attribute \ref onestep_poisson
+     \param osl is the desired function to assign at the private functor
+     */
+    inline void set_onestep_poisson (lapl::unsteady_poisson_functor<T> const osl);
+
+    ///@} end name Private Parameters
+
+
+    // CHANGABLE WITH GETPOTFILE
+
+    /*!
+     * \name GetPot Parameters
+     * \brief Members to set all private attributes also settable via \ref getpotfile
+     */
+    ///@{
+    /*!
+     \brief to set private attribute \ref maxiter
+     \param maxiter is the desired value
+     */
+    inline void set_maxiter (uint const& maxiter);
+
+    /*!
+     \brief to set private attribute \ref showfrequency
+     \param sf is the desired value
+     */
+    inline void set_showfrequency (uint const& sf);
+
+    /*!
+     \brief to set private attribute \ref auto_extract_conn_comp_freq
+     \param cc_freq is the desired value
+     */
+    inline void set_auto_extract_conn_comp_freq (uint const& cc_freq);
+
+    /*!
+     \brief to set private attribute \ref dumpfrequency
+     \param dump is the desired value
+     */
+    inline void set_dumpfrequency (uint const& dump);
+
+    /*!
+     \brief to set private attribute \ref outputname
+     \param name is the desired filename of GetPot file
+     */
+    inline void set_outputname (std::string const& name);
+
+    /*!
+     \brief to set private attribute \ref tol
+     \param tol is the desired value
+     */
+    inline void set_tol (T const& tol);
+
+    /*!
+     \brief to set private attribute \ref cc_init_pixel_x
+     \param cc_x is the desired value
+     */
+    inline void set_cc_init_pixel_x (double const& cc_x);
+
+    /*!
+     \brief to set private attribute \ref cc_init_pixel_y
+     \param cc_y is the desired value
+     */
+    inline void set_cc_init_pixel_y (double const& cc_y);
+
+    /*!
+     \brief to set private attribute \ref cc_init_pixel_z
+     \param cc_z is the desired value
+     */
+    inline void set_cc_init_pixel_z (double const& cc_z);
+
+    /*!
+     \brief to set private attribute \ref lamda
+     \param lamda is the desired value
+     */
+    inline void set_lamda (T const& lamda);
+
+    /*!
+     \brief to set private attribute \ref lamda1
+     \param lamda1 is the desired value
+     */
+    inline void set_lamda1 (T const& lamda1);
+
+    /*!
+     \brief to set private attribute \ref lamda2
+     \param lamda2 is the desired value
+     */
+    inline void set_lamda2 (T const& lamda2);
+
+    /*!
+     \brief to set private attribute \ref sigma
+     \param sigma is the desired value
+     */
+    inline void set_sigma (T const& sigma);
+
+    /*!
+     \brief to set private attribute \ref edge_detector_sigma
+     \param eds is the desired value
+     */
+    inline void set_edge_detector_sigma (T const& eds);
+
+    /*!
+     \brief to set private attribute \ref nu
+     \param nu is the desired value
+     */
+    inline void set_nu (T const& nu);
+
+    /*!
+     \brief to set private attribute \ref beta
+     \param beta is the desired value
+     */
+    inline void set_beta (T const& beta);
+
+    /*!
+     \brief to set private attribute \ref dt
+     \param dt is the desired value
+     */
+    inline void set_dt (T const& dt);
+
+    /*!
+     \brief to set private attribute \ref a0
+     \param a0 is the desired value
+     */
+    inline void set_a0 (T const& a0);
+
+    /*!
+     \brief to set private attribute \ref b0
+     \param b0 is the desired value
+     */
+    inline void set_b0 (T const& b0);
+
+    /*!
+     \brief to set private attribute \ref epsilon
+     \param epsilon is the desired value
+     */
+    inline void set_epsilon (T const& epsilon);
+
+    /*!
+     \brief to set private attribute \ref bc
+     \param bc is the desired value
+     */
+    inline void set_bc (bc_type const bc);
+
+    /*!
+     \brief to set private attribute \ref ls_tol
+     \param tol is the desired value
+     */
+    inline void set_ls_tol (T const& tol);
+
+    /*!
+     \brief to set private attribute \ref ls_steps
+     \param steps is the desired value
+     */
+    inline void set_ls_steps (uint const steps);
+
+    /*!
+     \brief to set private attribute \ref gaussian_pixel_approach
+     \param gpa is the desired value
+     */
+    inline void set_gaussian_pixel_approach (bool const gpa);
+
+    /*!
+     \brief to set private attribute \ref bc
+     \param ed is the desired value
+     */
+    inline void set_edge_detector (ed_type const ed);
+
+    /*!
+     \brief to set private attribute \ref auto_extract_conn_comp
+     \param auto_cc is the desired value
+     */
+    inline void set_auto_extract_conn_comp (bool const auto_cc);
+
+    /*!
+     \brief to set private attribute \ref cc_binary_output
+     \param cc_bo is the desired value
+     */
+    inline void set_cc_binary_output (bool const cc_bo);
+
+    /*!
+     \brief to set private attribute \ref cc_init_variables
+     \param cc_bo is the desired value
+     */
+    inline void set_cc_init_variables (bool const cc_iv);
+
+    /*!
+     \brief to set private attribute \ref segmentation::alpha
+     \param alpha is the desired value
+     */
+    inline void set_alpha (T const& alpha);
+
+    ///@} end name GetPot Parameters
+
+
+    // MEMBERS TO APPLY ALGORITHM
+
+    /*!
+     * \name Algorithm Execution
+     * \brief Members to execute algorithm
+     */
+    ///@{
+    /*!
+     \brief Member to set inizial rectangle/cube.
+
+     This member show image you'd like to segment and allows user to select
+     coordinates of the two vertices of the desired inizial rectangle/cube.
+     Clicking with mouse on the image user would be able to know coordinates and to
+     write it when program asks him.
+     Coordinates will be saved in private variables, so when user executes algorithm
+     the desired initial rectangle/cube is built.
+
+     \param image is image you'd like to segment using \ref apply.
+
+     \warning use this member with the same image you'd like to segment and note that
+     at the end of the algorithm coordinates will be set to the default values again.
+     */
+    void initialize_contour_as_cube (im3d::image3d<T> const& image);
+
+    /*!
+     \brief Member to apply the algorithm.
+
+     \param myim is the image to segment.
+     */
+    void apply (im3d::image3d<T> const& myim);
+
+    /*!
+     \brief Member to apply the algorithm.
+
+     \param myim is the image to segment
+     \param init is the initial value with whom levelset \ref phi is initialized
+     */
+    void apply (im3d::image3d<T> const& myim, im3d::image3d<T> const& init);
+
+    ///@} end name Algorithm Execution
+
+
+};
+
+}//end namespace segm
+
+#include "rsfe_splitbregman_imp.hxx"
+
+#endif // RSFE_SPLITBREGMAN_HXX_INCLUDED
