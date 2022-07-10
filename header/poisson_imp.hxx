@@ -396,4 +396,27 @@ void lapl::DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
     // 2D case
     if (Z == 1)
     {
-        double const htilde = 1. / ( 1. / dt + 2. / (hx * hx) 
+        double const htilde = 1. / ( 1. / dt + 2. / (hx * hx) + 2. / (hy * hy) );
+
+        for (uint j = 1; j < Y - 1; ++j)
+            for (uint i = 1; i < X - 1; ++i)
+            {
+                res (i, j, 0) =
+                    ( (res (i + 1, j, 0) + res (i - 1, j, 0) ) / (hx * hx) +
+                      (res (i, j + 1, 0) + res (i, j - 1, 0) ) / (hy * hy) +
+                      b (i, j, 0)     + res (i, j, 0) / dt         ) * htilde;
+            }
+    }
+
+    // 3D case
+    else
+    {
+        double const htilde = 1. / ( 1. / dt + 2. / (hx * hx) + 2. / (hy * hy) + 2. / (hz * hz) );
+
+        for (uint i = 1; i < X - 1; ++i)
+            for (uint j = 1; j < Y - 1; ++j)
+                for (uint k = 1; k < Z - 1; ++k)
+                {
+                    res (i, j, k) =
+                        ( (res (i + 1, j, k) + res (i - 1, j, k) ) / (hx * hx) +
+                          (res (i, j + 1, k) + res (i, j
