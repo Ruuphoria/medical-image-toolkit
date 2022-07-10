@@ -419,4 +419,17 @@ void lapl::DirGaussSeidel (im3d::image3d<T>& res, im3d::image3d<T> const& b,
                 {
                     res (i, j, k) =
                         ( (res (i + 1, j, k) + res (i - 1, j, k) ) / (hx * hx) +
-                          (res (i, j + 1, k) + res (i, j
+                          (res (i, j + 1, k) + res (i, j - 1, k) ) / (hy * hy) +
+                          (res (i, j, k + 1) + res (i, j, k - 1) ) / (hz * hz) +
+                          b (i, j, k)     + res (i, j, k) / dt         ) * htilde;
+                }
+    }
+
+    return;
+}
+
+
+
+#endif // POISSON_IMP_HXX_INCLUDED
+
+
