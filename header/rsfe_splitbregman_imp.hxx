@@ -488,3 +488,785 @@ void segm::rsfe_splitbregman<T>::extract_connected_component ()
 
         // first subcase: automatic setting of connected_component as current levelset
         if ( this->auto_extract_conn_comp_freq != 0 )
+        {
+            this->phi = connected_component;
+            this->phi.change_range_of_intensity (this->b0, this->a0);
+            if (this->cc_init_variables)
+            {
+                this->init_variables = true;
+            }
+            if (verbosity)
+            {
+                std::clog << "-- Updating current levelset to a chosen connected component" << std::endl;
+            }
+        }// end first subcase
+
+        // second subcase: asking user if he wants to set it as current levelset
+        else
+        {
+            im3d::interface<T> helper (connected_component);
+            char choice;
+
+            std::cout << "showing a connected component using private pixel to compute it" << std::endl;
+
+            helper.convertfromimage3d (connected_component);
+            helper.show_image_and_contour (0.5);
+
+            std::cout << "Do you want to set this connected component as current level set? (y/n): ";
+            cin >> choice;
+
+            if (choice == 'y')
+            {
+                this->phi = connected_component;
+                this->phi.change_range_of_intensity (this->b0, this->a0);
+                if (verbosity)
+                {
+                    std::clog << "-- Updating current levelset to a chosen connected component" << std::endl;
+                }
+
+                std::cout << "Do you want to initialize all other variables of the algorithm? (y/n): ";
+                cin >> choice;
+                if (choice == 'y')
+                {
+                    this->init_variables = true;
+                }
+
+            }
+        }// end second subcase
+
+    }// end second case
+
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::update_param_onthego ()
+{
+    char choice;
+
+    if (this->onthego == true)
+    {
+        if (this->verbosity)
+        {
+            std::clog << "-- Updating parameters of algorithm from file " << this->getpotfile;
+            std::clog << " (section splitbregman/onthego/)" << std::endl;
+        }
+        this->set_param_from_getpot ("onthego/");
+    }
+    else
+    {
+        std::cout << "Do you want to save current level set? (y/n): ";
+        cin >> choice;
+
+        if (choice == 'y')
+        {
+            this->save_current = true;
+        }
+
+        std::cout << "Do you want to terminate algortihm? (y/n): ";
+        cin >> choice;
+
+        if (choice == 'y')
+        {
+            this->end_now = true;
+        }
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_param_from_getpot (std::string const& section)
+{
+    // preparing GetPot input
+    std::string comment_start = "#";
+    std::string comment_end   = "\n";
+    std::string input_file  = this->getpotfile;
+
+    GetPot ifile (input_file.c_str(), comment_start.c_str(), comment_end.c_str() );
+
+    double ttemp;
+    int itemp;
+    std::string stemp;
+
+    ifile.set_prefix ( ("splitbregman/" + section).c_str() );
+
+    // General Parameters
+    itemp = ifile ("verbosity", -1);
+    if (itemp != -1)
+    {
+        this->set_verbosity ( static_cast<bool> (itemp) );
+    }
+
+    itemp = ifile ("maxiter", -1);
+    if (itemp > 0)
+    {
+        this->set_maxiter (itemp);
+    }
+
+    itemp = ifile ("showfrequency", -1);
+    if (itemp >= 0)
+    {
+        this->set_showfrequency (itemp);
+    }
+
+    itemp = ifile ("dumpfrequency", -1);
+    if (itemp >= 0)
+    {
+        this->set_dumpfrequency (itemp);
+    }
+
+    stemp = ifile ("outputname", "");
+    if (stemp.size() != 0 )
+    {
+        this->set_outputname (stemp);
+    }
+
+    itemp = ifile ("save_current", -1);
+    if (itemp != -1)
+    {
+        this->save_current = static_cast<bool> (itemp);
+    }
+
+    itemp = ifile ("end_now", -1);
+    if (itemp != -1)
+    {
+        this->end_now = static_cast<bool> (itemp);
+    }
+
+    // RSFE Parameters
+    ttemp = ifile ("sigma", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_sigma (ttemp);
+    }
+
+    ttemp = ifile ("lamda", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_lamda (ttemp);
+    }
+
+    ttemp = ifile ("lamda1", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_lamda1 (ttemp);
+    }
+
+    ttemp = ifile ("lamda2", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_lamda2 (ttemp);
+    }
+
+    ttemp = ifile ("nu", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_nu (ttemp);
+    }
+
+    ttemp = ifile ("beta", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_beta (ttemp);
+    }
+
+    ttemp = ifile ("dt", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_dt (ttemp);
+    }
+
+    itemp = ifile ("ls_steps", -1);
+    if (itemp != -1)
+    {
+        this->set_ls_steps ( static_cast<uint> (itemp) );
+    }
+
+    ttemp = ifile ("epsilon", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_epsilon (ttemp);
+    }
+
+    ttemp = ifile ("a0", 2.1e-6);
+    if (ttemp != 2.1e-6)
+    {
+        this->set_a0 (ttemp);
+    }
+
+    ttemp = ifile ("b0", -2.1e-6);
+    if (ttemp != -2.1e-6)
+    {
+        this->set_b0 (ttemp);
+    }
+
+    // Connected Component
+    itemp = ifile ("auto_extract_conn_comp", -1);
+    if (itemp != -1)
+    {
+        this->set_auto_extract_conn_comp (itemp);
+    }
+
+    itemp = ifile ("cc_binary_output", -1);
+    if (itemp != -1)
+    {
+        this->set_cc_binary_output (itemp);
+    }
+
+    itemp = ifile ("cc_init_variables", -1);
+    if (itemp != -1)
+    {
+        this->set_cc_init_variables (itemp);
+    }
+
+    ttemp = ifile ("cc_init_pixel_x", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_cc_init_pixel_x (ttemp);
+    }
+
+    ttemp = ifile ("cc_init_pixel_y", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_cc_init_pixel_y (ttemp);
+    }
+
+    ttemp = ifile ("cc_init_pixel_z", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_cc_init_pixel_z (ttemp);
+    }
+
+    itemp = ifile ("auto_extract_conn_comp_freq", -1);
+    if (itemp >= 0)
+    {
+        this->set_auto_extract_conn_comp_freq (itemp);
+    }
+
+    // Expert
+    itemp = ifile ("bc", -1);
+    if (itemp != -1)
+    {
+        this->set_bc ( static_cast<bc_type> (itemp) );
+    }
+
+    ttemp = ifile ("ls_tol", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_ls_tol (ttemp);
+    }
+
+    itemp = ifile ("edge_detector", -1);
+    if (itemp != -1)
+    {
+        this->set_edge_detector ( static_cast<ed_type> (itemp) );
+    }
+
+    ttemp = ifile ("edge_detector_sigma", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_edge_detector_sigma (ttemp);
+    }
+
+    itemp = ifile ("gaussian_pixel_approach", -1);
+    if (itemp != -1)
+    {
+        this->set_gaussian_pixel_approach (itemp);
+    }
+
+    ttemp = ifile ("tol", -1.);
+    if (ttemp != -1.)
+    {
+        this->set_tol (ttemp);
+    }
+
+    ttemp = ifile ("alpha", 1.e-9);
+    if (ttemp != 1.e-9)
+    {
+        this->set_alpha (ttemp);
+    }
+
+
+    return;
+}
+
+
+
+
+// PUBLIC MEMBER IMPLEMENTATION
+
+// MEMBERS TO SET PRIVATE PARAMETERS
+
+// NOT CHANGABLE WITH GETPOTFILE
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_getpotfile (std::string const& name)
+{
+
+    this->getpotfile = name;
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_onthego (bool const onthego)
+{
+    this->onthego = onthego;
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_logfilename (std::string const& name)
+{
+    this->logfilename = name;
+
+    return;
+}
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_cv (conv::filtering<T> const cv)
+{
+    this->cv = cv;
+
+    return;
+}
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_onestep_poisson
+(lapl::unsteady_poisson_functor<T> const osl)
+{
+    this->onestep_poisson = osl;
+
+    return;
+}
+
+
+
+
+// CHANGABLE WITH GETPOTFILE
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_verbosity (bool const v)
+{
+    this->verbosity = v;
+    if (verbosity)
+    {
+        std::clog << "---\tverbosity = " << this->verbosity << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_maxiter (uint const& maxiter)
+{
+    this->maxiter = maxiter;
+    if (verbosity)
+    {
+        std::clog << "---\tmaxiter = " << this->maxiter << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_showfrequency (uint const& sf)
+{
+    this->showfrequency = sf;
+    if (verbosity)
+    {
+        std::clog << "---\tshowfrequency = " << this->showfrequency << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_auto_extract_conn_comp_freq (uint const& cc_freq)
+{
+    this->auto_extract_conn_comp_freq = cc_freq;
+    if (verbosity)
+        std::clog << "---\tauto_extract_conn_comp_freq = " <<
+                  this->auto_extract_conn_comp_freq << std::endl;
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_dumpfrequency (uint const& dump)
+{
+
+    this->dumpfrequency = dump;
+    if (verbosity)
+    {
+        std::clog << "---\tdumpfrequency = " << this->dumpfrequency << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_outputname (std::string const& name)
+{
+
+    this->outputname = name;
+    if (verbosity)
+    {
+        std::clog << "---\toutputname = " << this->outputname << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_tol (T const& tol)
+{
+
+    if (tol >= 0)
+    {
+        this->tol = tol;
+        if (verbosity)
+        {
+            std::clog << "---\ttol = " << this->tol << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_tol: tol must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_cc_init_pixel_x (double const& cc_x)
+{
+    if (cc_x >= 0)
+    {
+        this->cc_init_pixel_x = cc_x;
+        if (verbosity)
+        {
+            std::clog << "---\tcc_init_pixel_x = " << this->cc_init_pixel_x << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_cc_init_pixel_x: coordinates must be positive" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_cc_init_pixel_y (double const& cc_y)
+{
+    if (cc_y >= 0)
+    {
+        this->cc_init_pixel_y = cc_y;
+        if (verbosity)
+        {
+            std::clog << "---\tcc_init_pixel_y = " << this->cc_init_pixel_y << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_cc_init_pixel_y: coordinates must be positive" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_cc_init_pixel_z (double const& cc_z)
+{
+    if (cc_z >= 0)
+    {
+        this->cc_init_pixel_z = cc_z;
+        if (verbosity)
+        {
+            std::clog << "---\tcc_init_pixel_z = " << this->cc_init_pixel_z << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_cc_init_pixel_z: coordinates must be positive" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_lamda (T const& lamda)
+{
+    if (lamda > 0)
+    {
+        this->lamda = lamda;
+        if (verbosity)
+        {
+            std::clog << "---\tlamda = " << this->lamda << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_lamda: lamda must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_lamda1 (T const& lamda1)
+{
+    if (lamda1 > 0)
+    {
+        this->lamda1 = lamda1;
+        if (verbosity)
+        {
+            std::clog << "---\tlamda1 = " << this->lamda1 << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_lamda1: lamda1 must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_lamda2 (T const& lamda2)
+{
+    if (lamda2 > 0)
+    {
+        this->lamda2 = lamda2;
+        if (verbosity)
+        {
+            std::clog << "---\tlamda2 = " << this->lamda2 << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_lamda2: lamda2 must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_sigma (T const& sigma)
+{
+    if (sigma > 0)
+    {
+        this->sigma = sigma;
+        if (verbosity)
+        {
+            std::clog << "---\tsigma = " << this->sigma << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_sigma: sigma must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_edge_detector (ed_type const ed)
+{
+
+    if (ed == 1 || ed == 2 || ed == 3)
+    {
+        this->edge_detector = ed;
+    }
+    else
+    {
+        std::clog << "WARNING::set_edge_detector: specify a proper ed_type condition" << std::endl;
+    }
+
+    return;
+
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_edge_detector_sigma (T const& eds)
+{
+    if (eds >= 0)
+    {
+        this->edge_detector_sigma = eds;
+        if (verbosity)
+        {
+            std::clog << "---\tedge_detector_sigma = " << this->edge_detector_sigma << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_edge_detector_sigma: " <<
+                  "edge_detector_sigma must be greater than zero";
+        std::clog << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_nu (T const& nu)
+{
+    if (nu >= 0)
+    {
+        this->nu = nu;
+        if (verbosity)
+        {
+            std::clog << "---\tnu = " << this->nu << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_nu: nu must be non negative" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_beta (T const& beta)
+{
+    if (beta >= 0)
+    {
+        this->beta = beta;
+        if (verbosity)
+        {
+            std::clog << "---\tbeta = " << this->beta << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_beta: beta must be non negative" << std::endl;
+    }
+
+    return;
+}
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_dt (T const& dt)
+{
+
+    if (dt > 0)
+    {
+        this->dt = dt;
+        if (verbosity)
+        {
+            std::clog << "---\tdt = " << this->dt << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_dt: dt must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_a0 (T const& a0)
+{
+    this->a0 = a0;
+    this->alpha = ( this->a0 + this->b0 ) / 2.;
+    if (verbosity)
+    {
+        std::clog << "---\ta0 = " << this->a0 << std::endl;
+        std::clog << "---\t  alpha = " << this->alpha << std::endl;
+    }
+
+    if (this->b0 < this->a0)
+    {
+        this->b0 = this->a0 + 1;
+        this->alpha = ( this->a0 + this->b0 ) / 2.;
+
+        std::clog << "WARNING::set_a0: b0 has to be greater than a0, hence its value is ";
+        std::clog << "automatically modified" << std::endl;
+        std::clog << "---\t  b0 = " << this->b0 << std::endl;
+        std::clog << "---\t  alpha = " << this->alpha << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_b0 (T const& b0)
+{
+    this->b0 = b0;
+    this->alpha = ( this->a0 + this->b0 ) / 2.;
+    if (verbosity)
+    {
+        std::clog << "---\tb0 = " << this->b0 << std::endl;
+        std::clog << "---\t  alpha = " << this->alpha << std::endl;
+    }
+
+    if (this->b0 < this->a0)
+    {
+        this->a0 = this->b0 - 1;
+        this->alpha = ( this->a0 + this->b0 ) / 2.;
+
+        std::clog << "WARNING::set_b0: a0 has to be lower than b0, hence its value is ";
+        std::clog << "automatically modified" << std::endl;
+        std::clog << "---\t  a0 = " << this->a0 << std::endl;
+        std::clog << "---\t  alpha = " << this->alpha << std::endl;
+    }
+    return;
+}
+
+
