@@ -1270,3 +1270,731 @@ void segm::rsfe_splitbregman<T>::set_b0 (T const& b0)
 }
 
 
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_epsilon (T const& epsilon)
+{
+    if (epsilon > 0)
+    {
+        this->epsilon = epsilon;
+        if (verbosity)
+        {
+            std::clog << "---\tepsilon = " << this->epsilon << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_epsilon: epsilon must be greater than zero" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_bc (bc_type const bc)
+{
+    if (bc == NEU)
+    {
+        this->bc = bc;
+        this->onestep_poisson.changef (lapl::NeuGaussSeidel);
+        if (verbosity)
+        {
+            std::clog << "---\tbc = NEU" << std::endl;
+        }
+    }
+    else if (bc == DIR)
+    {
+        this->bc = bc;
+        this->onestep_poisson.changef (lapl::DirGaussSeidel);
+        if (verbosity)
+        {
+            std::clog << "---\tbc = DIR" << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_bc: specify a proper bc_type condition" << std::endl;
+    }
+
+    return;
+
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_ls_tol (T const& tol)
+{
+    if (tol >= 0)
+    {
+        this->ls_tol = tol;
+        if (verbosity)
+        {
+            std::clog << "---\tls_tol = " << this->ls_tol << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_tol: tol must be positive" << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_ls_steps (uint const steps)
+{
+    if (steps > 0)
+    {
+        this->ls_steps = steps;
+        if (verbosity)
+        {
+            std::clog << "---\tls_steps = " << ls_steps << std::endl;
+        }
+    }
+    else
+    {
+        std::clog << "WARNING::set_ls_steps: ls_steps must be greater than 0" << std::endl;
+    }
+
+    return;
+
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_gaussian_pixel_approach (bool const gpa)
+{
+    this->gaussian_pixel_approach = gpa;
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_auto_extract_conn_comp (bool const auto_cc)
+{
+    this->auto_extract_conn_comp = auto_cc;
+    if (verbosity)
+    {
+        std::clog << "---\tauto_extract_conn_comp = " << this->auto_extract_conn_comp << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_cc_binary_output (bool const cc_bo)
+{
+    this->cc_binary_output = cc_bo;
+    if (verbosity)
+    {
+        std::clog << "---\tcc_binary_output = " << this->cc_binary_output << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_cc_init_variables (bool const cc_iv)
+{
+    this->cc_init_variables = cc_iv;
+    if (verbosity)
+    {
+        std::clog << "---\tcc_init_variables = " << this->cc_init_variables << std::endl;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::set_alpha (T const& alpha)
+{
+    if ( alpha > this->a0 && alpha < this->b0 )
+    {
+        this->alpha = alpha;
+        if (verbosity)
+        {
+            std::clog << "---\talpha = " << this->alpha << std::endl;
+        }
+    }
+
+    else
+    {
+        std::clog << "WARNING::set_alpha: alpha must be greater than " <<
+                  "a0 and less than b0" << std::endl;
+    }
+
+    return;
+}
+
+
+
+
+// MEMBERS TO APPLY ALGORITHM
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::initialize_contour_as_cube (im3d::image3d<T> const& image)
+{
+    im3d::interface<T> myim (image);
+
+    uint x1, x2, y1, y2, z1, z2;
+
+    int X (image.getdimx() ), Y (image.getdimy() ), Z (image.getdimz() );
+
+    if (image.getdimz() == 1)
+    {
+        std::cout << "Choose the two vertices of initial rectangle you'd like to set." << std::endl;
+    }
+    else
+    {
+        std::cout << "Choose the two vertices of initial cube you'd like to set." << std::endl;
+    }
+
+    myim.get_coordinates (x1, y1, z1, x2, y2, z2);
+
+    if (x1 > x2)
+    {
+        this->ix = floor (x2);
+        this->fx = floor (x1);
+    }
+    else
+    {
+        this->ix = floor (x1);
+        this->fx = floor (x2);
+    }
+
+    if (y1 > y2)
+    {
+        this->iy = floor (y2);
+        this->fy = floor (y1);
+    }
+    else
+    {
+        this->iy = floor (y1);
+        this->fy = floor (y2);
+    }
+
+    if (z1 > z2)
+    {
+        this->iz = floor (z2);
+        this->fz = floor (z1);
+    }
+    else
+    {
+        this->iz = floor (z1);
+        this->fz = floor (z2);
+    }
+
+    if ( this->ix < 0 || this->ix >= X )
+    {
+        this->ix = 0;
+    }
+    if ( this->iy < 0 || this->iy >= Y )
+    {
+        this->iy = 0;
+    }
+    if ( this->iz < 0 || this->iz >= Z )
+    {
+        this->iz = 0;
+    }
+
+    if ( this->fx < 0 || this->fx >= X )
+    {
+        this->fx = image.getdimx() - 1;
+    }
+    if ( this->fy < 0 || this->fy >= Y )
+    {
+        this->fy = image.getdimy() - 1;
+    }
+    if ( this->fz < 0 || this->fz >= Z )
+    {
+        this->fz = image.getdimz() - 1;
+    }
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::apply (im3d::image3d<T> const& myim)
+{
+    this->dimx = myim.getdimx();
+    this->dimy = myim.getdimy();
+    this->dimz = myim.getdimz();
+
+    this->initialize_phi_with_cube();
+
+    this->apply (myim, this->phi);
+
+    return;
+}
+
+
+
+template <typename T>
+void segm::rsfe_splitbregman<T>::apply (im3d::image3d<T> const& myim, im3d::image3d<T> const& init)
+{
+    // redirecting stderr if logfilename is set
+    if (this->logfilename != "")
+    {
+        stderr = freopen (this->logfilename.c_str(), "a", stderr);
+    }
+
+
+    std::clog << "- RSFE/Split-Bregman Algorithm for 3d image segmentation" << std::endl;
+
+    if (this->getpotfile != "")
+    {
+        if (verbosity)
+        {
+            std::clog << "-- Initializing parameters of algorithm from " <<
+                      "file " << this->getpotfile << " (section splitbregman/init/)" << std::endl;
+        }
+        this->set_param_from_getpot ("init/");
+    }
+    else
+    {
+        this->onthego = false;
+    }
+
+    T tollerance = 1000, old_sigma = this->sigma;
+    bool old_eds = this->edge_detector_sigma;
+    uint t;
+
+    this->dimx = myim.getdimx();
+    this->dimy = myim.getdimy();
+    this->dimz = myim.getdimz();
+
+    this->hx = myim.gethx();
+    this->hy = myim.gethy();
+    this->hz = myim.gethz();
+
+    if (this->dimz == 1)
+    {
+        this->space_dim = 2;
+    }
+    else
+    {
+        this->space_dim = 3;
+    }
+
+    // begin algorithm from im3d::image3d<T> init if its dimensions are coherent
+    this->initialize_phi_with_init (init);
+
+    // adjust phi spacing
+    this->phi.seth (this->hx, this->hy, this->hz);
+
+    std::clog << "- Sizeof(phi): " << sizeof (T) *dimx* dimy* dimz << " byte" << std::endl;
+    std::clog << "- dimensions:\t" << this->dimx << " x " << this->dimy;
+    std::clog << " x " << this->dimz << std::endl;
+    std::clog << "- spacing:\t" << this->hx << " x " << this->hy << " x " << this->hz << std::endl;
+
+    //construction of all need variables with correct dimensions and spacing
+    im3d::image3d<T> divdb (this->dimx, this->dimy, this->dimz, this->hx, this->hy, this->hz);
+    im3d::image3d<T> gforshrink (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> f1 (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> f2 (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> Heps (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> kones (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> kmyim (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> num (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> den (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> kr1 (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> kr2 (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> aux (0, 0, 0, this->hx, this->hy, this->hz);
+    im3d::image3d<T> phiold (0, 0, 0, this->hx, this->hy, this->hz);
+
+    std::vector<im3d::image3d<T> > b (this->space_dim, divdb), d;
+
+
+    //linking intarface image to myim
+    this->image.convertfromimage3d (myim);
+
+    for (uint i = 0; i < this->space_dim; ++i)
+    {
+        b[i] = 0.;
+    }
+
+    // showing initial contour
+    if ( this->showfrequency > 0 )
+    {
+        std::cout << "- showing initial contour..." << std::endl;
+
+        this->levelset.convertfromimage3d (this->phi);
+        this->levelset.show_contour_with_background_image (this->image, this->alpha);
+    }
+
+    // Build filters of the correct dimensions for the algorithm
+    conv::filtering<T>::build_gaussian_filter (this->phi,
+                                               this->sigma,
+                                               3,//radius of filter
+                                               this->gaussian_pixel_approach);
+
+    // compute kones and kmyim at the beginning of the algorithm
+    // (they don't change during execution)
+    aux.setdim (this->dimx, this->dimy, this->dimz, 1.);
+    this->cv (kones, aux);
+    this->cv (kmyim, myim);
+    aux.setdim (0, 0, 0);
+
+    // compute gforshrink using edge_detect private member
+    // (coefficient nu/lamda is included)
+    this->edge_detect ( gforshrink , myim );
+
+
+    // algorithm loop
+    for (t = 1; tollerance > tol && t <= this->maxiter && end_now == false; ++t)
+    {
+        if (this->verbosity)
+        {
+            std::clog << "-- Iteration " << t << std::endl;
+        }
+
+        // saving previous iteration result to compute norm of errors
+        phiold = this->phi;
+
+        // uncomment all the commented code ending with '\\!!!!!' to compute other norms
+        /*
+        std::vector<im3d::image3d<T> > b_old(this->space_dim,b[0]);
+        b_old[1]=b[1];
+        b_old[2]=b[2];
+        \\!!!!!
+        */
+
+
+
+        // -------------------------------------------
+        // |   UPDATE RHS OF FIRST MIN PROB ON PHI   |
+        // -------------------------------------------
+
+        // if user has modified sigma onthego
+        if (old_sigma != this->sigma)
+        {
+            old_sigma = this->sigma;
+            // Build filters with new sigma
+            conv::filtering<T>::build_gaussian_filter (this->phi,
+                                                       this->sigma,
+                                                       3,
+                                                       this->gaussian_pixel_approach);
+            // compute again kones and kmyim
+            aux.setdim (this->dimx, this->dimy, this->dimz, 1.);
+            this->cv (kones, aux);
+            this->cv (kmyim, myim);
+            aux.setdim (0, 0, 0);
+        }
+
+        // compute new heaviside using previous iteration result
+        this->set_heaviside (Heps);
+
+        // compute auxiliar variable num and den using convolution
+        this->cv (num, Heps * myim);
+        this->cv (den, Heps);
+        // set the dimensions of Heps to zero to limit memory usage
+        Heps.setdim (0, 0, 0);
+
+        // compute f1 and f2
+        f1 = num / den;
+        num -= kmyim; // note: -= limits memory usage
+        den -= kones;
+        num /= den;
+        // set the dimensions of den to zero to limit memory usage
+        den.setdim (0, 0, 0);
+        f2 = num; // f2 = (kmyim-num)/(kones-den)
+        // set the dimensions of num to zero to limit memory usage
+        num.setdim (0, 0, 0);
+
+        // compute kr1 and kr2
+        this->cv (kr2, f1 * this->lamda1 - f2 * this->lamda2); // factor = f1*lamda1 - f2*lamda2
+
+        f1 *= f1;
+        f1 *= this->lamda1; // note: *= limits memory usage
+        f2 *= f2;
+        f2 *= this->lamda2;
+        f1 -= f2;
+        // set the dimensions of f2 to zero to limit memory usage
+        f2.setdim (0, 0, 0);
+        this->cv (kr1, f1); // factor = f1*f1*lamda1 - f2*f2*lamda2
+        // set the dimensions of f2 to zero to limit memory usage
+        f1.setdim (0, 0, 0);
+
+        // choose bc value depending on kind of boundary condition
+        // set in bc private parameters
+        double chosen_bc;
+        if (this->bc == NEU)
+        {
+            chosen_bc = 0;
+        }
+        else if (this->bc == DIR)
+        {
+            chosen_bc = this->a0;
+        }
+
+        // compute one iteration of laplace unsteady equation with forcing function
+        // depending on results of convolutions (kones, kmyim, kr1, kr2), myim, private
+        // parameters (lamda1, lamda2, lamda) and shrink results at the previous iteration.
+
+        // computing forcing function in kr2
+        kr2 *= myim;
+        kr2 *= 2;
+        aux.setdim (this->dimx, this->dimy, this->dimz, this->lamda1 - this->lamda2 );
+        aux *= myim;
+        aux *= myim;
+        aux *= kones;
+        kr2 -= aux;
+        kr2 -= kr1;
+        kr2 /= this->lamda;
+        kr2 -= divdb;
+        // set the dimensions of kr1 to zero to limit memory usage
+        kr1.setdim (0, 0, 0);
+
+
+
+        // -----------------------------------------
+        // |   SOLVE MINIMIZATION PROBLEM ON PHI   |
+        // -----------------------------------------
+
+        // solve linear system
+        // forcing function = (2*kr2*myim-kones*myim*myim*(lamda1-lamda2)-kr1)/lamda-divdb
+        T ls_err;
+        this->ls_tol ? ls_err = 1000. : ls_err = -1.;
+        uint s;
+        for (s = 0; s < this->ls_steps || ls_err > this->ls_tol; ++s)
+        {
+            if ( (this->verbosity && s == this->ls_steps - 1) || this->ls_tol != 0)
+            {
+                aux = this->phi;
+            }
+            onestep_poisson (this->phi, kr2, this->dt, chosen_bc);
+            if (this->ls_tol != 0 && s >= this->ls_steps - 1)
+            {
+                ls_err = (this->phi - aux).normL2() / aux.normL2();
+            }
+        }
+        if (this->verbosity)
+        {
+            if (this->ls_tol == 0)
+            {
+                ls_err = (this->phi - aux).normL2() / aux.normL2();
+            }
+            std::clog << "\tlinear system error at " << s << "th (last) step: " << ls_err << std::endl;
+        }
+
+        // set the dimensions of kr2 and aux to zero to limit memory usage
+        aux.setdim (0, 0, 0);
+        kr2.setdim (0, 0, 0);
+
+        // cut all values of phi outside the range [a0,b0]
+        this->cut_phi();
+
+
+
+        // ------------------------------------------
+        // |   SET PHI AS ITS CONNECTED COMPONENT   |
+        // ------------------------------------------
+
+        // case total automatic connected component extraction
+        if ( this->auto_extract_conn_comp && this->auto_extract_conn_comp_freq != 0 && t % this->auto_extract_conn_comp_freq == 0)
+        {
+            this->extract_connected_component();
+        }
+
+
+        // showing partial result and allowing user interaction every showfrequency
+        if ( this->showfrequency != 0 && t % this->showfrequency == 0 && t != this->maxiter )
+        {
+            this->levelset.convertfromimage3d (this->phi);
+            // showing
+            this->internal_show();
+            // if not case total automatic
+            if ( ! (this->auto_extract_conn_comp && this->auto_extract_conn_comp_freq != 0) )
+            {
+                // allowing showing of a connected component of phi and setting it as current levelset
+                this->extract_connected_component();
+            }
+            // update parameters of the algorithm on the go
+            this->update_param_onthego();
+        }
+
+        // compute normL2 of error
+        tollerance = (this->phi - phiold).normL2() / phiold.normL2();
+
+        // compute norminf
+        if (this->verbosity)
+        {
+            T inf_err = (this->phi - phiold).norminf() / phiold.norminf();
+
+            std::clog << "\tnorm_inf: " << inf_err << "\tnorm_L2: " << tollerance << std::endl;
+            if (this->logfilename != "")
+            {
+                std::cout << "\tnorm_inf: " << inf_err << "\tnorm_L2: " << tollerance << std::endl;
+            }
+        }
+
+        // set the dimensions of phiold to zero to limit memory usage
+        phiold.setdim (0, 0, 0);
+
+
+
+        // --------------------------------------------------
+        // |   L1 PART and SPLIT-BREGMAN VARIABLES UPDATE   |
+        // --------------------------------------------------
+
+        if (this->init_variables)
+        {
+            divdb = 0.;
+            for (uint i = 0; i < this->space_dim; ++i)
+            {
+                b[i] = 0.;
+            }
+            this->init_variables = false;
+        }
+        else
+        {
+            // initialize splitbregman variable d:
+            // d = grad(phi)
+            this->phi.grad (d);
+
+            // partial update splitbregman variable b:
+            // b = b_old + d = b_old + grad(phi)
+            for (uint i = 0; i < this->space_dim; ++i)
+            {
+                b[i] += d[i];
+            }
+
+            // Update gforshrink if user has just changed edge_detector_sigma
+            if ( old_eds != this->edge_detector_sigma)
+            {
+                edge_detect ( gforshrink , myim );
+            }
+            old_eds = this->edge_detector_sigma;
+
+            // update splitbregman variable d:
+            // d_new = shrink(b, gforshrink) = shrink(b_old+grad(phi), gforshrink)
+            shrink (d, b, gforshrink);
+
+            /*
+            if(this->verbosity)
+            {
+                im3d::vector_abs(aux,d);
+                if (this->logfilename!="")
+                    std::cout << std::endl << "\tnormL1 of |d|: " << aux.normL1();
+                std::clog << std::endl << "\tnormL1 of |d|: " << aux.normL1();
+            }\\!!!!!
+            */
+
+            for (uint i = 0; i < this->space_dim; ++i)
+            {
+                // update splitbregman variable b:
+                // b_new = b-d_new = b_old+grad(phi)-shrink(b_old+grad(phi), gforshrink)
+                b[i] -= d[i];
+                // d = d_new - b_new
+                d[i] -= b[i];
+                //b_old[i] -= b[i];\\!!!!!
+            }
+
+            /*
+            if(this->verbosity)
+            {
+                im3d::vector_abs(aux,b);
+
+                if (this->logfilename!="")
+                    std::cout << "\tnormL1 of |b|: " << aux.normL1() << std::endl;
+                std::clog << "\tnormL1 of |b|: " << aux.normL1() << std::endl;
+
+                T max(0.), max1(b_old[0].norminf()), max2(b_old[1].norminf()), max3(b_old[2].norminf());
+                if (max1>max2 && max1>max3) max=max1;
+                if (max2>max1 && max2>max3) max=max2;
+                if (max3>max1 && max3>max2) max=max3;
+                if (this->logfilename!="")
+                    std::cout << "\tnorminf of |b-bold|: " << max << std::endl;
+                std::clog << "\tnorminf of |b-bold|: " << max << std::endl;
+            }
+            aux.setdim(0,0,0);
+            \\!!!!!
+            */
+
+            // compute div ( d_new - b_new )
+            // this result will be used in the forcing function of unsteady laplace member
+            // in next iteration
+            im3d::div (divdb, d);
+
+            // set the size of d to zero to limit memory usage
+            d.resize (0);
+        }
+
+
+        // saving partial results depending on values of private parameters
+        // dumpfrequency and save_current
+        if ( (dumpfrequency != 0 && t % dumpfrequency == 0 && t != this->maxiter) ||
+                save_current == true )
+        {
+            this->save_current = false;
+            this->levelset.convertfromimage3d (this->phi);
+            std::string  aux = this->outputname;
+            std::ostringstream oss;
+            oss << t;
+            aux += "_";
+            aux += oss.str();
+            this->levelset.write (aux);
+        }
+
+    }//end algorithm loop
+
+
+    this->levelset.convertfromimage3d (this->phi);
+
+    // last show
+    if (showfrequency > 0 && this->onthego == false)
+    {
+        std::cout << "--- showing result at the end of algorithm..." << std::endl;
+        this->internal_show();
+        this->extract_connected_component();
+    }
+
+    // saving final result
+    if (dumpfrequency > 0)
+    {
+        std::string  aux = outputname;
+        std::ostringstream oss;
+        --t;
+        oss << t;
+        aux += "_";
+        aux += oss.str();
+        aux += "_final";
+        this->levelset.write (aux);
+    }
+
+    // set coordinates of initial rectangle to default values again
+    this->ix = -1;
+    this->iy = -1;
+    this->iz = -1;
+    this->fx = -1;
+    this->fy = -1;
+    this->fz = -1;
+
+    // setting stderr again to default
+    if (this->logfilename != "")
+    {
+        fclose (stderr);
+    }
+
+    return;
+}
+
+
+
+#endif // SEGMENTATION_IMP_HXX_INCLUDED
