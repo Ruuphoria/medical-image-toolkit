@@ -58,3 +58,38 @@ protected:
      expected to be.
      */
     T alpha;
+
+    /*!
+     \brief member to handle the visualization process. It represents the image to be
+     segmented.
+     */
+    im3d::interface<T> image;
+
+    /*!
+     \brief Member to handle the visualization process of the level set function.
+     It is linked to \ref phi
+     */
+    im3d::interface<T> levelset;
+
+    /*!
+     \brief Member representing the level set function. This member should evolve
+     during the course of the algorithm.
+     */
+    im3d::image3d<T> phi;
+
+public:
+    //CONSTRUCTOR
+
+    //! Default constructor
+    segmentation() {};
+
+    //! Member to set private attribute \ref alpha
+    virtual inline void set_alpha (T const& alpha)
+    {
+        this->alpha = alpha;
+    };
+
+    /*!
+     * \brief Pure virtual member to apply algorithm starting from an initial image
+     *
+     * \param myim is t
