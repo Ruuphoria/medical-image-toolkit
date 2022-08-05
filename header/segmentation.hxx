@@ -92,4 +92,31 @@ public:
     /*!
      * \brief Pure virtual member to apply algorithm starting from an initial image
      *
-     * \param myim is t
+     * \param myim is the image to segment
+     * \param init is the initial value with whom levelset \ref phi is initialized
+     */
+    virtual void apply (im3d::image3d<T> const& myim, im3d::image3d<T> const& init) = 0;
+
+    /*!
+     * \brief Pure virtual member to apply algorithm
+     *
+     * \param myim is the image to segment
+     */
+    virtual void apply (im3d::image3d<T> const& myim) = 0;
+
+    //! Member to get output of the algorithm (\ref phi)
+    inline im3d::image3d<T> getoutput () const
+    {
+        return this->phi;
+    }
+
+    //! Member to show level \ref alpha of the levelset \ref phi
+    virtual inline void show_contour ();
+
+    //! Member to show levelset \ref phi with planes
+    virtual inline void show_levelset ();
+
+    //! Member to show levelset \ref phi with planes and with its level \ref alpha
+    virtual inline void show_levelset_and_contour();
+
+    
