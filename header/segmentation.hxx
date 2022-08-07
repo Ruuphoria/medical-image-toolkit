@@ -157,4 +157,13 @@ void segm::segmentation<T>::show_levelset_and_contour()
 }
 
 template <typename T>
-void segm::segmentation<T>::show_lev
+void segm::segmentation<T>::show_levelset_with_background_image()
+{
+    levelset.convertfromimage3d (this->phi);
+    levelset.show_contour_with_background_image (this->image, this->alpha);
+    return;
+}
+
+
+#endif // SEGMENTATION_HXX_INCLUDED
+
