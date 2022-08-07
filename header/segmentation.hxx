@@ -119,4 +119,42 @@ public:
     //! Member to show levelset \ref phi with planes and with its level \ref alpha
     virtual inline void show_levelset_and_contour();
 
-    
+    /*!
+     * \brief Member to show level \ref alpha of the levelset \ref phi with the image
+     * to segment as background
+     */
+    virtual inline void show_levelset_with_background_image();
+
+}; //close class segmentation
+
+} // close namespace segm
+
+
+// IMPLEMENTATIONS
+
+template <typename T>
+void segm::segmentation<T>::show_contour()
+{
+    levelset.convertfromimage3d (this->phi);
+    levelset.show_contour (this->alpha);
+    return;
+}
+
+template <typename T>
+void segm::segmentation<T>::show_levelset()
+{
+    levelset.convertfromimage3d (this->phi);
+    levelset.show_image();
+    return;
+}
+
+template <typename T>
+void segm::segmentation<T>::show_levelset_and_contour()
+{
+    levelset.convertfromimage3d (this->phi);
+    levelset.show_image_and_contour (this->alpha);
+    return;
+}
+
+template <typename T>
+void segm::segmentation<T>::show_lev
