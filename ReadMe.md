@@ -27,4 +27,32 @@ This library is validated on Linux and harnesses the following libraries:
 - [fftw](http://www.fftw.org) to efficiently compute DFT
 - [GetPot](http://getpot.sourceforge.net/) to import parameters from a data file
 
-Prior to initiating the installation, all these libraries must 
+Prior to initiating the installation, all these libraries must be installed.
+
+Note:
+
+- The library requires the fftw version in tandem with openmp (if you compile it, employ the option --enable-shared)
+- You can download GetPot from the website and copy it in your path, for example `/usr/include/`
+- In debian grounded Linux distribution all the requisite packages (except GetPot) should be acquirable with apt-get
+
+Upon installing all these packages, you can exploit cmake to compile all the executables:
+
+```
+mkdir build_directory
+cd path_to_build_directory
+cmake path_to_source_directory
+make
+```
+
+## Documentaion
+To shape documentation you need to install [doxygen](http://www.doxygen.org) and [graphviz](http://www.graphviz.org) and then type:
+
+```
+cmake path_to_source_directory -DBUILD_DOCUMENTATION=ON
+make doc
+```
+
+The html guide is at `build_directory/doc/html/`
+
+## Usage
+Launch an executable sans any option to witness its helper.
